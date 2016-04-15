@@ -80,7 +80,7 @@
 
   - name: Create web root for Nginx
     become: True
-    file: path='{{WEB_ROOT}}' state=directory mode=0755
+    file: path='{{IMAGES_ROOT}}' state=directory mode=0777
 
   - name: Create nginx config
     become: True
