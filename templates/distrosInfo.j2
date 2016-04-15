@@ -1,0 +1,32 @@
+#!/bin/bash
+#distros and the official names of the images must be in a one to one correspondance!
+
+declare -A distrosMap     # Create an associative array
+declare -A distrosMapTargets     # Create an associative array
+
+#distros
+distrosMapTargets[centos7]="centos7"
+distrosMapTargets[debianWheezy]="debian"
+distrosMapTargets[ubuntu]="ubuntu"
+distrosMapTargets[fedora]="fedora"
+distrosMapTargets[debianJessie]="debian"
+distrosMapTargets[rstudio]="rstudio ubuntu"
+
+#distros
+distrosMap[centos7]="CentOS 7.0.1406 (SWITCHengines)"
+distrosMap[debianWheezy]="Debian Wheezy 7.8 (SWITCHengines)"
+distrosMap[ubuntu]="Ubuntu Trusty 14.04 (SWITCHengines)"
+distrosMap[fedora]="Fedora release 20 (SWITCHengines)"
+distrosMap[debianJessie]="Debian Jessie 8.1 (SWITCHengines)"
+distrosMap[rstudio]="RStudio Appliance (SWITCHengines)"
+
+descriptionText="Please refer to http://help.switch.ch/engines/documentation/switch-official-images for further information"
+description_old="Deprecated, please use the most recent version, with property Public"
+
+declare -A descriptionsMap
+descriptionsMap[centos7]="User: centos . ${descriptionText}"
+descriptionsMap[debianJessie]="User: debian . ${descriptionText}"
+descriptionsMap[debianWheezy]="User: debian . ${descriptionText}"
+descriptionsMap[ubuntu]="User: ubuntu . ${descriptionText}"
+descriptionsMap[fedora]="User: fedora . ${descriptionText}"
+descriptionsMap[rstudio]="User: rstudio . ${descriptionText}"

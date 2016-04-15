@@ -1,0 +1,68 @@
+#!/bin/bash
+
+export PATH=${PATH}:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/
+
+IMAGES_ROOT="{{IMAGES_ROOT}}"
+
+while getopts ":c:d:h" option;do
+  case "$option" in
+    c) distrosInfo=$OPTARG;;
+    d) singleDistros=($OPTARG);;
+    h) echo "-c DISTROS info file (optional). If not specified, the default /home/ubuntu/distrosInfo is used instead;-d DISTROS (optional) specified within quotes (e.g. \"ubuntu debian\"). If not specified, the distros defined in the DISTROS info file are used;-h (this help message)"
+       exit
+       ;;
+  esac
+done
+
+shift $((OPTIND-1))  # This tells getopts to move on to the next argument.
+
+# IMPORTANT: distrosInfo provides ALL the maps that are used. This is
+# also why it is sourced by default!
+: ${distrosInfo:="/home/ubuntu/distrosInfo"}
+. $distrosInfo
+for K in "${!distrosMap[@]}"; do distros+=("${K}") ; done
+
+if [[ ! -z $singleDistros ]];then
+  distros=("${singleDistros[@]}")
+fi
+
+#distros=(centos7 debian ubuntu fedora)
+
+for i in "${distros[@]}";do
+  source /home/ubuntu/diskimage-builder/env_source/${i}_SOURCE
+  disk-image-create -x -a amd64 -t raw -o /tmp/$i ${distrosMapTargets[$i]} vm  >&  /tmp/diskLOG.${i} & wait $!
+#touch /tmp/${i}.raw
+  exit_stat=$?
+  if [[ "${exit_stat}" -eq 0 ]];then
+### move away the old files
+    if [[ -a ${IMAGES_ROOT}/${i}.raw.2 ]]
+    then
+      sudo mv ${IMAGES_ROOT}/${i}.raw.2 ${IMAGES_ROOT}/${i}.raw.3
+    fi
+    if [[ -a ${IMAGES_ROOT}/${i}.raw.1 ]]
+    then
+      sudo mv ${IMAGES_ROOT}/${i}.raw.1 ${IMAGES_ROOT}/${i}.raw.2
+    fi
+    if [[ -a ${IMAGES_ROOT}/${i}.raw ]]
+    then
+     sudo mv ${IMAGES_ROOT}/${i}.raw ${IMAGES_ROOT}/${i}.raw.1
+    fi
+###
+    sudo mv /tmp/${i}.raw ${IMAGES_ROOT}/${i}.raw
+    if [[ -a ${IMAGES_ROOT}/${i}.raw.3 ]]
+    then
+      sudo rm ${IMAGES_ROOT}/${i}.raw.3
+    fi
+    if [[ -a ${IMAGES_ROOT}/ERROR_${i} ]]
+    then
+      sudo rm ${IMAGES_ROOT}/ERROR_${i}
+    fi
+  else
+    sudo touch ${IMAGES_ROOT}/ERROR_${i}
+  fi
+done
+
+if ls -d /tmp/*.d 1> /dev/null 2>&1
+then
+  rm -r /tmp/*.d
+fi

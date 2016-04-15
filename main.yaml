@@ -43,8 +43,58 @@
       name: imagebuilderansible
       ansible_host: "{{osinstance.server.public_v4}}"
       volume_device: "{{osinstance.server.volumes[0].device}}"
-      ansible_become: True
       ansible_user: "{{ansible_user}}"
-      ansible_sudo: true
       ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 
+- name: Configure imagebuilder host
+  vars:
+    - WEB_ROOT: /usr/share/nginx/html
+    - IMAGES_ROOT: "{{WEB_ROOT}}/images"
+  hosts: imagebuilderansible
+  tasks:
+  - name: bashrc
+    lineinfile: dest=/home/ubuntu/.bashrc line="export PATH=$PATH:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin"
+  - name: install packages
+    become: True
+    apt: name={{item}} update_cache=yes
+    with_items:
+      - expect
+      - unattended-upgrades
+      - git
+      - qemu-utils
+      - qemu
+      - kpartx
+      - ntp
+      - debootstrap
+      - nginx
+      - glance
+      - python-glanceclient
+      - screen
+      - htop
+
+  - name:  Clone dib-utils git
+    git: repo=https://github.com/openstack/dib-utils.git dest=/home/ubuntu/dib-utils force=yes
+
+  - name:  Clone SWITCH git repo for diskimage-builder
+    git: repo=https://github.com/switch-ch/diskimage-builder.git dest=/home/ubuntu/diskimage-builder force=yes version=SWITCHengines
+
+  - name: Create web root for Nginx
+    become: True
+    file: path='{{WEB_ROOT}}' state=directory mode=0755
+
+  - name: Create nginx config
+    become: True
+    template: src=templates/default.j2 dest=/etc/nginx/sites-available/default
+    notify: restart nginx
+
+  - name: Create distrosInfo file in home dir
+    template: src=templates/distrosInfo.j2 dest=/home/ubuntu/distrosInfo
+
+  - name: Load the create images bash script
+    template: src=templates/SWITCHengines-create-images.sh.j2 dest=/home/ubuntu/SWITCHengines-create-images.sh mode="u=rwx,g=r,o=r"
+
+
+  handlers:
+    - name: restart nginx
+      become: True
+      service: name=nginx state=restarted
