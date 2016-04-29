@@ -15,6 +15,7 @@ source ~/openrc
 Run the playbook
 
 `
+export ANSIBLE_HOST_KEY_CHECKING=False
 ansible-playbook main.yaml
 `
 
