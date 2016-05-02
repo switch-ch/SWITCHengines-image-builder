@@ -19,3 +19,5 @@ distrosMap["debianJessie"]=["debian","Debian Jessie 8.1 (SWITCHengines)","http:/
 
 distrosMap["rstudio"]=["ubuntu","RStudio Appliance (SWITCHengines)","http://ch.archive.ubuntu.com/ubuntu","","/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: ubuntu . "+descriptionText]
 
+distrosMap["ubuntuxenial"]=["ubuntu","Ubuntu Xenial 16.04 (SWITCHengines)","http://ch.archive.ubuntu.com/ubuntu","","/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: ubuntu . "+descriptionText]
+
