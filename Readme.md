@@ -4,22 +4,22 @@
 
 Create your config file:
 
-`
+```
 cp vars.yaml.template vars.yaml
-`
+```
 
 Source your openstack config:
 
-`
+```
 source ~/openrc
-`
+```
 
 Run the playbook
 
-`
+```
 export ANSIBLE_HOST_KEY_CHECKING=False
 ansible-playbook main.yaml
-`
+```
 
 ## Build the images
 
