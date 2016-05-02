@@ -30,7 +30,7 @@ fi
 
 for i in "${distros[@]}";do
   source /home/ubuntu/diskimage-builder/env_source/${i}_SOURCE
-  disk-image-create -x -a amd64 -t raw -o /tmp/$i ${distrosMapTargets[$i]} vm  >&  /tmp/diskLOG.${i} & wait $!
+  disk-image-create -a amd64 -t raw -o /tmp/$i ${distrosMapTargets[$i]} vm  >&  /tmp/diskLOG.${i} & wait $!
 #touch /tmp/${i}.raw
   exit_stat=$?
   if [[ "${exit_stat}" -eq 0 ]];then
