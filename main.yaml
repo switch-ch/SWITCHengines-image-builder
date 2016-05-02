@@ -84,6 +84,8 @@
   - name: Load the python upload utility for images
     copy: src=files/SWITCHEngines-image-uploader.py dest=/home/ubuntu/SWITCHEngines-image-uploader.py mode=0755
 
+  - name: Load the python upload utility for images distrosInfo file
+    copy: src=files/distrosInfo.py dest=/home/ubuntu/distrosInfo.py mode=0755
 
   handlers:
     - name: restart nginx
