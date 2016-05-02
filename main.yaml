@@ -64,7 +64,7 @@
     git: repo=https://github.com/openstack/dib-utils.git dest=/home/ubuntu/dib-utils force=yes
 
   - name:  Clone SWITCH git repo for diskimage-builder
-    git: repo=https://github.com/zioproto/diskimage-builder.git dest=/home/ubuntu/diskimage-builder force=yes version=SWITCHengines-dev
+    git: repo=https://github.com/switch-ch/diskimage-builder.git dest=/home/ubuntu/diskimage-builder force=yes version=SWITCHengines
 
   - name: Create web root for Nginx
     become: True
@@ -84,8 +84,6 @@
   - name: Load the python upload utility for images
     copy: src=files/SWITCHEngines-image-uploader.py dest=/home/ubuntu/SWITCHEngines-image-uploader.py mode=0755
 
-  - name: Load the python upload utility for images distrosInfo file
-    copy: src=files/distrosInfo.py dest=/home/ubuntu/distrosInfo.py mode=0755
 
   handlers:
     - name: restart nginx
