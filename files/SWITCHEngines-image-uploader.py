@@ -49,11 +49,11 @@ def main():
 
     # validate args
     global url
-    if not args.url and not os.path.exists('/usr/share/nginx/html/SWITCHengines/'):
-        print("ERROR: Url location of the raw images not defined, and default local directory `/usr/share/nginx/html/SWITCHengines/` does not exist!")
+    if not args.url and not os.path.exists('/usr/share/nginx/html/images/'):
+        print("ERROR: Url location of the raw images not defined, and default local directory `/usr/share/nginx/html/images/` does not exist!")
         sys.exit(1)
     else:
-        url = args.url if args.url else '/usr/share/nginx/html/SWITCHengines/'
+        url = args.url if args.url else '/usr/share/nginx/html/images/'
 
    
     if not args.user and not os.environ['OS_USERNAME']:
