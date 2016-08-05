@@ -149,7 +149,8 @@ def glanceImagesIds(name):
 
     # get tenant id from keystone
     global os_tenant_id
-    os_tenant_id = keystone.get_project_id(None)
+    tenant = keystone.tenants.find(name=keystone_authtoken_user_tenant_name)
+    os_tenant_id = tenant.id
 
     glance_endpoint = keystone.service_catalog.url_for(service_type='image',
                                                        endpoint_type='publicURL',region_name=os_region_name)
