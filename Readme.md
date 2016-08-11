@@ -43,3 +43,43 @@ You will need openstack admin rights to run this tool.
 The new images will be uploaded as public.
 
 This tool is meant to refresh existing images. It will change the name of old version of the images already present, and disable them from being public. The old images will have in the name the timestamp of when they have been deactivated. The users will not be able to start new VMs using the old images. However note that old images cannot be deleted from glance, because there are possibly cinder volumes and nova ephemeral volumes depending from the old glance images. This is a consequence of the CoW features of rbd.
+
+## Testing images
+
+Before upgrading to production you can manually make these checks running the images privately on your tenant.
+
+### login with ssh
+
+ * Ubuntu: `ssh ubuntu@<FLOATING_IP>`
+ * Debian: `ssh debian@<FLOATING_IP>`
+ * Centos: `ssh centos@<FLOATING_IP>`
+
+### check common commands
+```
+    hostname
+    sudo su
+    init 6
+```
+
+Check hostname also on console. Can also be checked via ssh with: cat /dev/vcs1
+
+Check  the file `/etc/apt/sources.list`
+
+ * correct Release
+ * security repo enabled
+ * mirrors in Switzerland
+ * Automatic Security Updates enabled?
+
+In the file `/etc/apt/apt.conf.d/20auto-upgrades`
+```
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+```
+
+Can also be checked with something like:
+
+`apt-config dump | grep Periodic`
+
+Che file `/etc/ntp.conf` the pool should be in Switzerland
+
+`ntpq -p`
