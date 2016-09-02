@@ -1,4 +1,4 @@
-# Readme
+# README
 
 ## Create a Ubuntu VM in Openstack to run diskimage-builder
 
