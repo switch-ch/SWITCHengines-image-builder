@@ -30,7 +30,6 @@ GLANCE_COMMAND='/usr/bin/glance'
 
 def main():
 
-
     # parse args
     parser = argparse.ArgumentParser(description="glanceCron managament tool")
     parser.add_argument('-A','--user', help='User name')
@@ -54,7 +53,7 @@ def main():
     # validate args
     global url
     if not args.url and not os.path.exists('/usr/share/nginx/html/images/'):
-        print("ERROR: Url location of the raw images not defined, and default local directory `/usr/share/nginx/html/images/` does not exist!")
+        print("ERROR: URL location of the raw images not defined, and default local directory `/usr/share/nginx/html/images/` does not exist!")
         sys.exit(1)
     else:
         url = args.url if args.url else '/usr/share/nginx/html/images/'
@@ -154,12 +153,13 @@ def glanceImagesIds(name):
     os_tenant_id = tenant.id
 
     glance_endpoint = keystone.service_catalog.url_for(service_type='image',
-                                                       endpoint_type='publicURL',region_name=os_region_name)
+                                                       endpoint_type='publicURL',
+                                                       region_name=os_region_name)
     glance = glclient.Client(endpoint=glance_endpoint,token=keystone.auth_token)
     try:
-        glance_output=glance.images.list()
+        images = glance.images.list()
     except Exception as e:
-        print("Error in image list %s" % e.message)
+        print("Error trying to list Glance images:", e.strerror)
         #os._exit(1)
 
     existingImages = {}
@@ -167,9 +167,14 @@ def glanceImagesIds(name):
     #existingImagesOwner = []
     #existingImagesVisibilityFlag = []
     #existingImagesProtectionFlag = []
-    for line in glance_output:
-        if name in line.name.encode('UTF8') :
-            existingImages[line.id] = { 'name':line.name , 'owner':line.owner,'visibility':line.visibility,'protected':line.protected }
+    for image in images:
+        if name in image.name.encode('UTF8') :
+            existingImages[image.id] = {
+                'name':       image.name,
+                'owner':      image.owner,
+                'visibility': image.visibility,
+                'protected':  image.protected
+            }
     return existingImages
 
 #def glanceImageShow(id):
@@ -187,11 +192,11 @@ def glanceImagesIds(name):
 #                                                       endpoint_type='publicURL')
 #    glance = glclient.Client(endpoint=glance_endpoint,token=keystone.auth_token)
 #    try:
-#        glance_output=glance.images.list(image_id=id)
+#        images=glance.images.list(image_id=id)
 #    except Exception as e:
-#        print("Error %s" % e.message)
+#        print("Error %s" % e.strerror)
 #        #os._exit(1)
-#    return glance_output
+#    return images
 
 def glanceImageCreate(name, description,distro,url):
     from glanceclient.v1 import client as glclient
@@ -203,13 +208,14 @@ def glanceImageCreate(name, description,distro,url):
     import pprint
 
     logging.basicConfig()
-    keystone = keystone_client.Client(auth_url=keystone_authtoken_auth_url,
-                                      username=keystone_authtoken_user,
-                                      password=keystone_authtoken_user_password,
-                                      tenant_name=keystone_authtoken_user_tenant_name,
-                                      region_name=os_region_name)
-    glance_endpoint = keystone.service_catalog.url_for(service_type='image',
-                                                       endpoint_type='publicURL')
+    keystone = keystone_client.Client(
+        auth_url=keystone_authtoken_auth_url,
+        username=keystone_authtoken_user,
+        password=keystone_authtoken_user_password,
+        tenant_name=keystone_authtoken_user_tenant_name,
+        region_name=os_region_name)
+    glance_endpoint = keystone.service_catalog.url_for(
+        service_type='image', endpoint_type='publicURL')
     glance = glclient.Client(endpoint=glance_endpoint,token=keystone.auth_token)
     exit_status=0
     imagefile=url+distro+'.raw'
@@ -232,12 +238,12 @@ def glanceImageCreate(name, description,distro,url):
                     'hw_vif_multiqueue_enabled': 'true',
                 })
     except Exception as e:
-        print("Error open image file %s" % e.message)
+        print("Error opening image file %s: %s" % ( imagefile, e.strerror ))
         exit_status=1
     return exit_status
 
 
-def glanceImageUpdate(id, description_old,name,today):
+def glanceImageUpdate(id, description_old, name, today):
     from glanceclient.v2 import client as glclient
     from keystoneclient import session
     from keystoneclient.v2_0 import client as keystone_client
@@ -255,19 +261,19 @@ def glanceImageUpdate(id, description_old,name,today):
     glance = glclient.Client(endpoint=glance_endpoint,token=keystone.auth_token)
     try:
         name=name+"-"+str(today)
-        glance_output=glance.images.update(image_id=id,
-                                           name=name,
-                                           visibility="private",
-                                           description=description_old)
+        glance.images.update(image_id=id,
+                             name=name,
+                             visibility="private",
+                             description=description_old)
     except Exception as e:
-        print("Error in glance image update %s" % e.message)
+        print("Error updating Glance image %s: %s" % ( id, e.strerror) )
         update_status=1
         #os._exit(1)
 
     #glance_command.append('>&  /tmp/GLANCE_UPDATE_DEBUG')
     return update_status
 
-def fileCreate(name,message):
+def fileCreate(name, message):
 
     file = open(name, 'w+')
     file.write(message)
