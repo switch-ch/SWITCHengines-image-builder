@@ -221,6 +221,15 @@ def glanceImageCreate(name, description,distro,url):
                 container_format='bare',
                 data=fimg,properties={
                     'description': description,
+                    #
+                    # To enable virtio-net multi-queue support.
+                    # This has been added to the Nova libvirt driver
+                    # as of the OpenStack Liberty release.
+                    #
+                    # The assumption is that all OSes for which we
+                    # upload images can handle this.
+                    #
+                    'hw_vif_multiqueue_enabled': 'true',
                 })
     except Exception as e:
         print("Error open image file %s" % e.message)
