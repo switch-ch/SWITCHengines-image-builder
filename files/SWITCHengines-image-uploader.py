@@ -221,10 +221,13 @@ def glanceImageCreate(name, description,distro,url):
     imagefile=url+distro+'.raw'
     try:
         with open(imagefile) as fimg:
+            # Calculate the size of the file
+            imagesize = os.fstat(fimg.fileno()).st_size
             image = glance.images.create(
                 name=name,is_public=True,
                 disk_format='raw',
                 container_format='bare',
+                min_disk=(imagesize/1024/1024/1024)+1,
                 data=fimg,properties={
                     'description': description,
                     #
