@@ -225,6 +225,13 @@ def glanceImageCreate(name, description,distro,url,minram):
         with open(imagefile) as fimg:
             # Calculate the size of the file
             imagesize = os.fstat(fimg.fileno()).st_size
+            # os_flavor
+            if distro.startswith("ubuntu") or (distro == rstudio) or (distro == zeppelin):
+                os_flavor="ubuntu"
+            if distro.startswith("debian"):
+                os_flavor="debian"
+            if (distro == centos) or (distro == fedora):
+                os_flavor="fedora"
             image = glance.images.create(
                 name=name,is_public=True,
                 disk_format='raw',
@@ -242,6 +249,14 @@ def glanceImageCreate(name, description,distro,url,minram):
                     # upload images can handle this.
                     #
                     'hw_vif_multiqueue_enabled': 'true',
+                    #
+                    # QuickUI web interface properties
+                    #
+                    'os_flavor': os_flavor,
+                    #'default_user': 'ubuntu',
+                    #'os_version': 'Trusty 14.04',
+                    #'requires_rdp': 'true',
+                    #'requires_ssh': 'true',
                 })
     except Exception as e:
         print("Error opening image file %s: %s" % ( imagefile, e.strerror ))
