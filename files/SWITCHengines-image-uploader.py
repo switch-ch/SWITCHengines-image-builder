@@ -93,11 +93,13 @@ def main():
     distros=[]
     descriptionsMap={}
     descriptionsMapLong={}
+    minram={}
     description_old = distrosInfo.description_old
     for k in distrosInfo.distrosMap:
         distros.append(k)
         descriptionsMap[k]=distrosInfo.distrosMap[k][1]
         descriptionsMapLong[k]=distrosInfo.distrosMap[k][5]
+        minram[k]=distrosInfo.distrosMap[k][6]
 
     if  args.distros:
         distros=[args.distros]
@@ -198,7 +200,7 @@ def glanceImagesIds(name):
 #        #os._exit(1)
 #    return images
 
-def glanceImageCreate(name, description,distro,url):
+def glanceImageCreate(name, description,distro,url,minram):
     from glanceclient.v1 import client as glclient
     from keystoneclient import session
     from keystoneclient.v2_0 import client as keystone_client
@@ -228,6 +230,7 @@ def glanceImageCreate(name, description,distro,url):
                 disk_format='raw',
                 container_format='bare',
                 min_disk=(imagesize/1024/1024/1024)+1,
+                min_ram=minram,
                 data=fimg,properties={
                     'description': description,
                     #
@@ -306,7 +309,7 @@ def Exec(region,distros,descriptionsMapLong,engines_names):
                 engines_name=engines_names[i]
                 description=descriptionsMapLong[i]
                 #creation of the new image
-                exit_status=glanceImageCreate(engines_name,description,i,url)
+                exit_status=glanceImageCreate(engines_name,description,i,url,minram[i])
                 #print "glanceImageCreate %s with exit status %d" % (i,exit_status)
                 #Moving away the old image with update (if creation of new one succeded)
                 #print "%s %d" % (existingImagesIdsFinal[i],len(existingImagesIdsFinal[i]))
