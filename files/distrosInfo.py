@@ -21,3 +21,4 @@ distrosMap["rstudio"]=["ubuntu","RStudio Appliance (SWITCHengines)","http://ch.a
 
 distrosMap["ubuntuxenial"]=["ubuntu","Ubuntu Xenial 16.04 (SWITCHengines)","http://ch.archive.ubuntu.com/ubuntu","","/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: ubuntu . "+descriptionText]
 
+distrosMap["zeppelin"]=["ubuntu","Spark and Zeppelin Appliance (SWITCHengines)","http://ch.archive.ubuntu.com/ubuntu","","/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: ubuntu . "+descriptionText]
