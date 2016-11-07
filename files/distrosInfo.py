@@ -1,24 +1,99 @@
 global distrosMap, descriptionsMap, description_old
 
-descriptionText="Please refer to http://help.switch.ch/engines/documentation/switch-official-images for further information"
-description_old="Deprecated, please use the most recent version, with property Public"
+descriptionText = "Please refer to http://help.switch.ch/engines/documentation/switch-official-images for further information"
 
-distrosMap={}
+distrosMap = {}
 
-#template: distrosMap["distrosKey"]=[diskimage-builder target e.g. debian, image name, DIB_DISTRIBUTION_MIRROR,DIB_RELEASE,PATH,DESCRIPTION]
+# template: distrosMap["distrosKey"]=[diskimage-builder target e.g. debian, image name, DIB_DISTRIBUTION_MIRROR,DIB_RELEASE,PATH,DESCRIPTION]
 
-distrosMap["centos7"]=["centos7","CentOS 7.1 (SWITCHengines)","http://mirror.switch.ch/ftp/mirror/centos/","","/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: centos . "+descriptionText,"1024"]
+distrosMap["centos7"] = {
+	"target": "centos7",
+	"image_name": "CentOS 7.2 (SWITCHengines)",
+	"os_flavor": "centos",
+	"default_user": "centos",
+	"os_version": "7.2",
+	"requires_rdp": "false",
+	"requires_ssh": "true",
+    "min_ram": "512"
+   
+}
 
-distrosMap["debianWheezy"]=["debian","Debian Wheezy 7.8 (SWITCHengines)","http://ftp.ch.debian.org/debian/", "wheezy", "/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: debian . "+ descriptionText,"1024"]
+distrosMap["debianJessie"] = {
+	"target": "debian",
+	"image_name": "Debian Jessie 8.6 (SWITCHengines)",
+	"os_flavor": "debian",
+	"default_user": "debian",
+	"os_version": "Jessie 8.6",
+	"requires_rdp": "false",
+	"requires_ssh": "true",
+    "min_ram": "512"
+}
 
-distrosMap["ubuntu"]=["ubuntu","Ubuntu Trusty 14.04 (SWITCHengines)","http://ch.archive.ubuntu.com/ubuntu","","/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: ubuntu . "+descriptionText,"1024"]
+distrosMap["debianWheezy"] = {
+	"target": "debian",
+	"image_name": "Debian Wheezy 7.11 (SWITCHengines)",
+	"os_flavor": "debian",
+	"default_user": "debian",
+	"os_version": "Wheezy 7.11",
+	"requires_rdp": "false",
+	"requires_ssh": "true",
+    "min_ram": "512"
+}
 
-distrosMap["fedora"]=["fedora","Fedora release 20 (SWITCHengines)", "http://mirror.switch.ch/ftp/mirror/fedora/linux","","/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: fedora . "+descriptionText,"1024"]
+distrosMap["fedora"] = {
+	"target": "fedora",
+	"image_name": "Fedora release 22 (SWITCHengines)",
+	"os_flavor": "fedora",
+	"default_user": "fedora",
+	"os_version": "22",
+	"requires_rdp": "false",
+	"requires_ssh": "true",
+    "min_ram": "512"
+}
 
-distrosMap["debianJessie"]=["debian","Debian Jessie 8.1 (SWITCHengines)","http://ftp.ch.debian.org/debian/", "Jessie", "/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: debian . "+ descriptionText,"1024"]
+distrosMap["ubuntu"] = {
+	"target": "ubuntu",
+	"image_name": "Ubuntu Trusty 14.04 (SWITCHengines)",
+	"os_flavor": "ubuntu",
+	"default_user": "ubuntu",
+	"os_version": "Trusty 14.04",
+	"requires_rdp": "false",
+	"requires_ssh": "true",
+    "min_ram": "512"
+}
 
-distrosMap["rstudio"]=["ubuntu","RStudio Appliance (SWITCHengines)","http://ch.archive.ubuntu.com/ubuntu","","/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: ubuntu . "+descriptionText,"1024"]
+distrosMap["ubuntuxenial"] = {
+	"target": "ubuntu",
+	"image_name": "Ubuntu Xenial 16.04 (SWITCHengines)",
+	"os_flavor": "ubuntu",
+	"default_user": "ubuntu",
+	"os_version": "Xenial 16.04",
+	"requires_rdp": "false",
+	"requires_ssh": "true",
+    "min_ram": "512"
+}
 
-distrosMap["ubuntuxenial"]=["ubuntu","Ubuntu Xenial 16.04 (SWITCHengines)","http://ch.archive.ubuntu.com/ubuntu","","/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: ubuntu . "+descriptionText,"1024"]
+distrosMap["rstudio"] = {
+	"target": "ubuntu",
+	"image_name": "RStudio Appliance (SWITCHengines)",
+	"os_flavor": "ubuntu",
+	"default_user": "ubuntu",
+	#"os_version": "Trusty 14.04", Dont tag as Trusty, breaks Quick UI
+	"os_version": "None", 
+	"requires_rdp": "false",
+	"requires_ssh": "true",
+    "min_ram": "4096"
+}
 
-distrosMap["zeppelin"]=["ubuntu","Spark and Zeppelin Appliance (SWITCHengines)","http://ch.archive.ubuntu.com/ubuntu","","/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/","User: ubuntu . "+descriptionText,"4096"]
+
+distrosMap["zeppelin"] = {
+	"target": "ubuntu",
+	"image_name": "Spark Zeppelin (SWITCHengines)",
+	"os_flavor": "ubuntu",
+	"default_user": "ubuntu",
+	#"os_version": "Trusty 14.04", #Dont tag as Trusty, breaks QuickUI
+	"os_version": "None", 
+	"requires_rdp": "false",
+	"requires_ssh": "true",
+    "min_ram": "8192"
+}

@@ -43,10 +43,8 @@ def main():
                         help='DISTROS info file (optional). If not specified, the default /home/ubuntu/distrosInfo is used instead')
     parser.add_argument('-D','--distros',
                         help=' DISTROS (optional) specified within quotes (e.g. \"ubuntu debian\"). If not specified, the distros defined in the DISTROS info file are used')
-    parser.add_argument('-Text','--text',
-                        help='Text to add as a prefix to the images names (e.g. test)')
     parser.add_argument('-U','--url',
-                        help='Url of the location where the raw images are to be found. Default is local directory `/usr/share/nginx/html/SWITCHengines/`')
+                        help='Url of the location where the raw images are to be found. Default is local directory `/usr/share/nginx/html/images/`')
     args = parser.parse_args()
 
 
@@ -78,35 +76,12 @@ def main():
         print("ERROR: Tenant name missing")
         sys.exit(1)
 
-    if not args.text:
-        text=""
-    else:
-        text=args.text
-
-    # IMPORTANT: distrosInfo provides ALL the maps that are used. This
-    # is also why it is sourced by default!
-
     import distrosInfo
-
-    global description_old
-
-    distros=[]
-    descriptionsMap={}
-    descriptionsMapLong={}
-    minram={}
-    description_old = distrosInfo.description_old
-    for k in distrosInfo.distrosMap:
-        distros.append(k)
-        descriptionsMap[k]=distrosInfo.distrosMap[k][1]
-        descriptionsMapLong[k]=distrosInfo.distrosMap[k][5]
-        minram[k]=distrosInfo.distrosMap[k][6]
 
     if  args.distros:
         distros=[args.distros]
-
-    engines_names = {}
-    for i in distros:
-        engines_names[i]=text + descriptionsMap[i]
+    else: 
+        distros=distrosInfo.distrosMap.keys()
 
     import datetime
     from datetime import timedelta
@@ -117,7 +92,7 @@ def main():
     get_keystone_creds()
     for region in [args.regions] if args.regions else [os.environ["OS_REGION_NAME"]]:
         os.environ["OS_REGION_NAME"]=region
-        Exec(region,distros,descriptionsMapLong,engines_names)
+        Exec(region,distros)
 
 def get_keystone_creds():
     global keystone_authtoken_user
@@ -130,11 +105,6 @@ def get_keystone_creds():
     keystone_authtoken_user_password=os.environ['OS_PASSWORD']
     os_region_name=os.environ['OS_REGION_NAME']
     keystone_authtoken_user_tenant_name = os.environ['OS_TENANT_NAME']
-    #d = {}
-    #d['username'] = os.environ['OS_USERNAME']
-    #d['password'] = os.environ['OS_PASSWORD']
-    #d['auth_url'] = os.environ['OS_AUTH_URL']
-    #d['tenant_name'] = os.environ['OS_TENANT_NAME']
 
 def glanceImagesIds(name):
 
@@ -179,28 +149,7 @@ def glanceImagesIds(name):
             }
     return existingImages
 
-#def glanceImageShow(id):
-#    from glanceclient.v2 import client as glclient
-#    from keystoneclient import session
-#    from keystoneclient.v2_0 import client as keystone_client
-#    import re
-#    import pprint
-#
-#    keystone = keystone_client.Client(auth_url=keystone_authtoken_auth_url,
-#                       username=keystone_authtoken_user,
-#                       password=keystone_authtoken_user_password,
-#                       tenant_name=keystone_authtoken_user_tenant_name,region_name=os_region_name)
-#    glance_endpoint = keystone.service_catalog.url_for(service_type='image',
-#                                                       endpoint_type='publicURL')
-#    glance = glclient.Client(endpoint=glance_endpoint,token=keystone.auth_token)
-#    try:
-#        images=glance.images.list(image_id=id)
-#    except Exception as e:
-#        print("Error %s" % e.strerror)
-#        #os._exit(1)
-#    return images
-
-def glanceImageCreate(name, description,distro,url,minram):
+def glanceImageCreate(dmap,distro):
     from glanceclient.v1 import client as glclient
     from keystoneclient import session
     from keystoneclient.v2_0 import client as keystone_client
@@ -208,6 +157,7 @@ def glanceImageCreate(name, description,distro,url,minram):
     from glanceclient.common import http
     import re
     import pprint
+    import sys, traceback
 
     logging.basicConfig()
     keystone = keystone_client.Client(
@@ -225,21 +175,14 @@ def glanceImageCreate(name, description,distro,url,minram):
         with open(imagefile) as fimg:
             # Calculate the size of the file
             imagesize = os.fstat(fimg.fileno()).st_size
-            # os_flavor
-            if distro.startswith("ubuntu") or (distro == rstudio) or (distro == zeppelin):
-                os_flavor="ubuntu"
-            if distro.startswith("debian"):
-                os_flavor="debian"
-            if (distro == centos) or (distro == fedora):
-                os_flavor="fedora"
             image = glance.images.create(
-                name=name,is_public=True,
+                name=dmap["image_name"],is_public=True,
                 disk_format='raw',
                 container_format='bare',
                 min_disk=(imagesize/1024/1024/1024)+1,
-                min_ram=minram,
+                min_ram=dmap['min_ram'],
                 data=fimg,properties={
-                    'description': description,
+                    'description': "User: "+dmap["default_user"]+" Please refer to http://help.switch.ch/engines/documentation/switch-official-images for further information",
                     #
                     # To enable virtio-net multi-queue support.
                     # This has been added to the Nova libvirt driver
@@ -252,24 +195,29 @@ def glanceImageCreate(name, description,distro,url,minram):
                     #
                     # QuickUI web interface properties
                     #
-                    'os_flavor': os_flavor,
-                    #'default_user': 'ubuntu',
-                    #'os_version': 'Trusty 14.04',
-                    #'requires_rdp': 'true',
-                    #'requires_ssh': 'true',
+                    'os_flavor': dmap['os_flavor'],
+                    'default_user': dmap['default_user'],
+                    'os_version': dmap['os_version'],
+                    'requires_rdp': dmap['requires_rdp'],
+                    'requires_ssh': dmap['requires_ssh'],
                 })
     except Exception as e:
-        print("Error opening image file %s: %s" % ( imagefile, e.strerror ))
+        print("Error opening image file %s" % ( imagefile))
+        print "Exception in user code:"
+        print '-'*60
+        traceback.print_exc(file=sys.stdout)
+        print '-'*60
         exit_status=1
     return exit_status
 
 
-def glanceImageUpdate(id, description_old, name, today):
+def glanceImageUpdate(id, name, today):
     from glanceclient.v2 import client as glclient
     from keystoneclient import session
     from keystoneclient.v2_0 import client as keystone_client
     import re
     import pprint
+    description_old = "Deprecated, please use the most recent version, with property Public"
     update_status=0
     keystone = keystone_client.Client(
         auth_url=keystone_authtoken_auth_url,
@@ -300,19 +248,19 @@ def fileCreate(name, message):
     file.write(message)
     file.close()
 
-def Exec(region,distros,descriptionsMapLong,engines_names):
+def Exec(region,distros):
 
     import os.path
     import re
+    import distrosInfo
 
     exit_fin=0
     existingImagesIDs=[]
     existingImagesIdsFinal={}
     for i in distros:
         existingImagesIdsFinal[i]=[]
-        engines_name=engines_names[i]
         #We identify the currently existing official Public images of a specific distro (e.g. ubuntu)
-        existingImages=glanceImagesIds(engines_name)
+        existingImages=glanceImagesIds(distrosInfo.distrosMap[i]["image_name"])
         for j in existingImages: #j is the image id like 83c789a5-d834-4101-8256-3423fe579313
             if existingImages[j]['visibility'] == 'public' \
                and existingImages[j]['owner'].encode('UTF8') == os_tenant_id:
@@ -321,42 +269,37 @@ def Exec(region,distros,descriptionsMapLong,engines_names):
         if not len(existingImagesIdsFinal[i]) > 1:
             #error conditions for the distros.raw
             if not   os.path.isfile(url+str(i)+'_ERROR'):
-                engines_name=engines_names[i]
-                description=descriptionsMapLong[i]
                 #creation of the new image
-                exit_status=glanceImageCreate(engines_name,description,i,url,minram[i])
+                exit_status=glanceImageCreate(distrosInfo.distrosMap[i],i)
                 #print "glanceImageCreate %s with exit status %d" % (i,exit_status)
                 #Moving away the old image with update (if creation of new one succeded)
                 #print "%s %d" % (existingImagesIdsFinal[i],len(existingImagesIdsFinal[i]))
                 if exit_status == 0 and len(existingImagesIdsFinal[i]) == 1:
                     update_status=glanceImageUpdate(existingImagesIdsFinal[i][0],
-                                                    description_old,
-                                                    engines_name,
+                                                    distrosInfo.distrosMap[i]["image_name"],
                                                     str(today))
                     #print "glanceImageUpdate %s with exit status %d" % (i,update_status)
                     #check if the moving away of the old image succeded
                     if  update_status != 0:
                         fileCreate('/tmp/ERROR_UPDATE_IMAGES_GLANCE_' \
-                                   + engines_name+'_'+region,
+                                   + distrosInfo.distrosMap[i]["image_name"]+'_'+region,
                                    "Exit status="+str(update_status) + " " \
                                    "Id="+str(existingImagesIdsFinal).strip('[]') + " " \
-                                   "Description="+description_old + " " \
-                                   "Name="+engines_name + " " \
+                                   "Name="+distrosInfo.distrosMap[i]["image_name"] + " " \
                                    "Date="+str(today))
                         exit_fin=1
                     else:
                         fileCreate('/tmp/ERROR_CREATION_IMAGES_GLANCE_' \
-                                   + engines_name+'_'+region,
+                                   + distrosInfo.distrosMap[i]["image_name"]+'_'+region,
                                    "Exit status="+str(exit_status) + " " \
-                                   "Description="+description_old + " " \
-                                   "Name="+engines_name + " " \
+                                   "Name="+distrosInfo.distrosMap[i]["image_name"] + " " \
                                    "Date="+str(today))
                         exit_fin=1
         else:
             # if counterTest condition trigers an error, then we
             # report it as a touch file
             fileCreate('/tmp/ERROR_TOO_MANY_IMAGES_GLANCE_' \
-                       +engines_name + '_' + i + '_' + region,
+                       +distrosInfo.distrosMap[i]["image_name"] + '_' + i + '_' + region,
                        "")
             print("ERROR_TOO_MANY_IMAGES_GLANCE",counterTest[i])
             exit_fin=1

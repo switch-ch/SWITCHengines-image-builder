@@ -5,9 +5,18 @@
   vars_files:
     - vars.yaml
   tasks:
+  - name: Create volume
+    os_volume:
+      auth:
+        auth_url: "{{ lookup('env', 'OS_AUTH_URL') }}"
+        username: "{{ lookup('env', 'OS_USERNAME') }}"
+        password: "{{ lookup('env', 'OS_PASSWORD') }}"
+        project_name: "{{ lookup('env', 'OS_TENANT_NAME') }}"
+      display_name: "{{ volname }}"
+      size: "{{ volsize }}"
   - name: launch an instance
     os_server:
-      name: "{{vmname}}"
+      name: "{{ volname }}"
       state: present
       auth:
         auth_url: "{{ lookup('env', 'OS_AUTH_URL') }}"
@@ -20,6 +29,8 @@
       key_name: "{{key_name}}"
       nics:
         - net-name: "{{net_name}}"
+      volumes:
+        - "{{ volname }}"
       wait: yes
     register: osinstance
 
@@ -31,6 +42,7 @@
     add_host:
       name: imagebuilderansible
       ansible_host: "{{osinstance.server.public_v4}}"
+      volume_device: "{{osinstance.server.volumes[0].device}}"
       ansible_user: "{{ansible_user}}"
       ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 
@@ -69,6 +81,27 @@
   - name: Create web root for Nginx
     become: True
     file: path='{{IMAGES_ROOT}}' state=directory mode=0777
+
+  - name: check if the volume is formatted
+    become: True
+    stat: path='{{IMAGES_ROOT}}/lost+found/'
+    register: volumefs
+
+  - name: Format volume
+    filesystem: fstype=ext4 dev=/dev/vdb
+    when: not volumefs.stat.exists
+
+#  - name: Edit fstab
+#    lineinfile: dest=/etc/fstab line="/dev/vdb   {{IMAGES_ROOT}}        ext4   defaults        0 0"
+
+  - name: Mount volume
+    become: True
+    mount:
+      name: "{{IMAGES_ROOT}}"
+      src: /dev/vdb
+      fstype: ext4
+      opts: nobootwait
+      state: mounted
 
   - name: Create nginx config
     become: True

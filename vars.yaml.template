@@ -1,4 +1,6 @@
 vmname: image-builder-ansible
+volname: image-builder-ansible
+volsize: 100
 secgroups: default
 image: Ubuntu Trusty 14.04 (SWITCHengines)
 flavor: c1.xlarge
