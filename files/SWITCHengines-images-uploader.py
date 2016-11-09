@@ -128,7 +128,7 @@ def main():
     # images
     #
     images_location = args.images_location if args.images_location else DEFAULT_IMAGES_LOCATION
-    #images_prefix = args.prefix if args.prefix else None
+    images_name_prefix = args.prefix
 
     #
     # Openstack credentials
@@ -158,7 +158,7 @@ def main():
     try:
         tenant = keystone.projects.find(name=os_tenant_name)
     except keystoneclient.exceptions.NotFound as e:
-        logger.error("Looking up tenant id for '{}' failed: {}".format(os_tenant_name,e))
+        logger.error("Looking up tenant id for '{}' failed".format(os_tenant_name))
         sys.exit(1)
     os_tenant_id = tenant.id
 
@@ -201,8 +201,8 @@ def main():
                                                                        eop_image.visibility))
 
             # create/upload the new image
-            logger.info("Creating new image '{}'".format(image_name))
-            rc = glance_create_new_image(glance, images_location, image_info)
+            logger.info("Creating and uploading new image '{}'".format(image_name))
+            rc = glance_create_new_image(glance, images_location, image_info, images_name_prefix)
             if rc != 0:
                 return_code += 1
                 logger.error("{}@{}: New image '{}' -> '{}' not created!".format(distro_name,
@@ -266,10 +266,11 @@ def glance_create_new_image(glance, images_location, image_info, image_name_pref
         logger.warning("image raw file:'{}' not found!".format(image_file))
         return 1
 
+    fimg = None
     try:
-        fimg = open(image_file)
+        fimg = open(image_file, 'rb')
     except Exception as e:
-        logger.error("Opening raw image file:'{}' failed: {}".format(image_file, e))
+        logger.error("Opening raw image file:'{}' failed".format(image_file))
         return 1
 
     try:
@@ -296,16 +297,21 @@ def glance_create_new_image(glance, images_location, image_info, image_name_pref
         image_properties = image_info['image_properties']
         logger.debug("image_properies: {}".format(image_properties))
 
-        glance.images.create(name=image_name,
-                             is_public=True,
-                             disk_format='raw',
-                             container_format='bare',
-                             min_disk=int(image_min_disk),
-                             min_ram=int(image_min_ram),
-                             data=fimg,
-                             properties=image_properties)
+        logger.debug("glance image create (private): '{}'".format(image_name))
+        image = glance.images.create(name=image_name,
+                                     visibility='private',
+                                     disk_format='raw',
+                                     container_format='bare',
+                                     min_disk=int(image_min_disk),
+                                     min_ram=int(image_min_ram))
+        logger.debug("glance image upload: '{}' -> '{}'".format(fimg.name, image_name))
+        glance.images.upload(image.id, fimg)
+        logger.debug("glance image update: visibility=public, properties={}".format(image_properties))
+        image_properties.update(visibility='public')
+        glance.images.update(image.id, **image_properties)
+
     except Exception as e:
-        logger.error("Creating new Glance image {} failed: {}".format(image_name, e))
+        logger.exception("Creating new Glance image '{}' failed".format(image_name))
         return 1
 
     return 0
@@ -326,9 +332,8 @@ def glance_image_set_private(glance, image, new_name, new_description):
                              name=new_name,
                              description=new_description)
     except Exception as e:
-        logger.error("Updating Glance image '{}' [{}] -> '{}' failed: {}".format(image.name, image.id,
-                                                                                 new_name,
-                                                                                 e))
+        logger.exception("Updating Glance image '{}' [{}] -> '{}' failed: {}".format(image.name, image.id,
+                                                                                     new_name))
         return 1
 
     return 0
