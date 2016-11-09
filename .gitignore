@@ -1,4 +1,4 @@
 vars.yaml
 *.pyc
-*.idea/
+.idea/
 *.retry
