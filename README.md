@@ -38,7 +38,8 @@ http://ip.domain/images/
 ## Upload images to glance
 
 We also provide a tool to upload the new created images to glance:
-`SWITCHengines-image-uploader.py`
+
+    SWITCHengines-images-uploader.py
 
 You will need openstack admin rights to run this tool.
 
