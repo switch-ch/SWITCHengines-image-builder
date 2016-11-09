@@ -39,7 +39,7 @@ http://ip.domain/images/
 
 We also provide a tool to upload the new created images to glance:
 
-    SWITCHengines-images-uploader.py
+    SWITCHengines-images-uploader.py --all-regions
 
 You will need openstack admin rights to run this tool.
 
