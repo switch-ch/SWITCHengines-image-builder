@@ -1,13 +1,13 @@
 #
 # images information config
 #
-image_description_deprecated = "DEPRECATED, please use the most recent public image"
+description_deprecated = "DEPRECATED, please use the most recent public image"
 
 images_info = {}
 
 images_info["centos_7"] = {
     "image_raw_source": "centos7.raw",
-	"image_name": "CentOS 7.2 (SWITCHengines)",
+	"image_name": "CentOS 7 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
 	"image_properties": {
@@ -23,7 +23,7 @@ images_info["centos_7"] = {
 
 images_info["debian_jessie"] = {
     "image_raw_source": "debianJessie.raw",
-	"image_name": "Debian Jessie 8.2 (SWITCHengines)",
+	"image_name": "Debian Jessie 8 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
 	"image_properties": {
@@ -39,7 +39,7 @@ images_info["debian_jessie"] = {
 
 images_info["debian_wheezy"] = {
     "image_raw_source": "debianWheezy.raw",
-	"image_name": "Debian Wheezy 7.11 (SWITCHengines)",
+	"image_name": "Debian Wheezy 7 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
 	"image_properties": {
@@ -118,8 +118,8 @@ images_info["rstudio"] = {
 }
 
 images_info["zeppelin"] = {
-    "image_raw_source": "",
-	"image_name": "Spark Zeppelin (SWITCHengines)",
+    "image_raw_source": "zeppelin.raw",
+    "image_name": "Spark Zeppelin (SWITCHengines)",
     "image_min_ram": "4096",
     "image_min_disk": "auto",
     "image_properties": {
