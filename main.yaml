@@ -5,21 +5,28 @@
   vars_files:
     - vars.yaml
   tasks:
+  - name: ssh security group
+    os_security_group:
+      state: present
+      name: ssh
+      description: allow SSH access on port 22
+  - name: add ssh rule
+    os_security_group_rule:
+      security_group: ssh
+      protocol: tcp
+      port_range_min: 22
+      port_range_max: 22
+      remote_ip_prefix: 0.0.0.0/0
   - name: launch an instance
     os_server:
-      name: "{{vmname}}"
+      name: "{{ vmname }}"
       state: present
-      auth:
-        auth_url: "{{ lookup('env', 'OS_AUTH_URL') }}"
-        username: "{{ lookup('env', 'OS_USERNAME') }}"
-        password: "{{ lookup('env', 'OS_PASSWORD') }}"
-        project_name: "{{ lookup('env', 'OS_TENANT_NAME') }}"
-      image: "{{image}}"
-      security_groups: "{{secgroups}}"
-      flavor: "{{flavor}}"
-      key_name: "{{key_name}}"
+      image: "{{ image }}"
+      security_groups: ssh
+      flavor: "{{ flavor }}"
+      key_name: "{{ key_name }}"
       nics:
-        - net-name: "{{net_name}}"
+        - net-name: "{{ net_name }}"
       wait: yes
     register: osinstance
 
@@ -55,15 +62,23 @@
       - ntp
       - debootstrap
       - nginx
-      - glance
-      - python-glanceclient
       - screen
       - htop
+      - python-pip
+      - python-dev
 
-  - name:  Clone dib-utils git
+  - name: pip install python-keystoneclient
+    become: True
+    pip: name=python-keystoneclient
+
+  - name: pip install python-glanceclient
+    become: True
+    pip: name=python-glanceclient
+
+  - name: git clone dib-utils
     git: repo=https://github.com/openstack/dib-utils.git dest=/home/ubuntu/dib-utils force=yes
 
-  - name:  Clone SWITCH git repo for diskimage-builder
+  - name: git clone SWITCH repo for diskimage-builder
     git: repo=https://github.com/switch-ch/diskimage-builder.git dest=/home/ubuntu/diskimage-builder force=yes version=SWITCHengines
 
   - name: Create web root for Nginx
@@ -82,7 +97,7 @@
     template: src=templates/SWITCHengines-create-images.sh.j2 dest=/home/ubuntu/SWITCHengines-create-images.sh mode="u=rwx,g=r,o=r"
 
   - name: Load the python upload utility for images
-    copy: src=files/SWITCHengines-image-uploader.py dest=/home/ubuntu/SWITCHengines-image-uploader.py mode=0755
+    copy: src=files/SWITCHengines-images-uploader.py dest=/home/ubuntu/SWITCHengines-images-uploader.py mode=0755
 
   - name: Load the python upload utility for images distrosInfo file
     copy: src=files/distrosInfo.py dest=/home/ubuntu/distrosInfo.py mode=0755
