@@ -307,8 +307,7 @@ def glance_create_new_image(glance, images_location, image_info, image_name_pref
         logger.debug("glance image upload: '{}' -> '{}'".format(fimg.name, image_name))
         glance.images.upload(image.id, fimg)
         logger.debug("glance image update: visibility=public, properties={}".format(image_properties))
-        image_properties.update(visibility='public')
-        glance.images.update(image.id, **image_properties)
+        glance.images.update(image.id, visibility='public', **image_properties)
 
     except Exception as e:
         logger.exception("Creating new Glance image '{}' failed".format(image_name))
@@ -332,8 +331,8 @@ def glance_image_set_private(glance, image, new_name, new_description):
                              name=new_name,
                              description=new_description)
     except Exception as e:
-        logger.exception("Updating Glance image '{}' [{}] -> '{}' failed: {}".format(image.name, image.id,
-                                                                                     new_name))
+        logger.exception("Updating Glance image '{}' [{}] -> '{}' failed".format(image.name, image.id,
+                                                                                 new_name))
         return 1
 
     return 0
