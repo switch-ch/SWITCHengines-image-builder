@@ -22,8 +22,9 @@ Run the playbook
 
 ## Build the images
 
-Now you can login to the instance and use the
-`./SWITCHengines-create-images.sh` script.
+Now you can login to the instance and use the script:
+
+    ./SWITCHengines-create-images.sh
 
 You can check the progress of the script with the logfiles produced in
 the `/tmp` folder.
