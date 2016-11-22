@@ -4,27 +4,27 @@
 
 Create your config file:
 
-```
-cp vars.yaml.template vars.yaml
-```
+    cp vars.yaml.template vars.yaml
 
-Source your openstack config:
+and edit the variables.
 
-```
-source ~/openrc
-```
+Source your OpenStack credentials:
+
+
+    source ~/.openrc
+
 
 Run the playbook
 
-```
-export ANSIBLE_HOST_KEY_CHECKING=False
-ansible-playbook main.yaml
-```
+    export ANSIBLE_HOST_KEY_CHECKING=False
+    ansible-playbook main.yaml
+
 
 ## Build the images
 
-Now you can login to the instance and use the
-`./SWITCHengines-create-images.sh` script.
+Now you can login to the instance and use the script:
+
+    ./SWITCHengines-create-images.sh
 
 You can check the progress of the script with the logfiles produced in
 the `/tmp` folder.
@@ -38,7 +38,8 @@ http://ip.domain/images/
 ## Upload images to glance
 
 We also provide a tool to upload the new created images to glance:
-`SWITCHengines-image-uploader.py`
+
+    SWITCHengines-images-uploader.py --all-regions
 
 You will need openstack admin rights to run this tool.
 

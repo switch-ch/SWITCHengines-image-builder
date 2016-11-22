@@ -1,14 +1,22 @@
 #!/bin/bash
-
+# set -x
 export PATH=${PATH}:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin/
 
 IMAGES_ROOT="{{IMAGES_ROOT}}"
 
-while getopts ":c:d:h" option;do
+while getopts ":c:d:h" option; do
   case "$option" in
-    c) distrosInfo=$OPTARG;;
-    d) singleDistros=($OPTARG);;
-    h) echo "-c DISTROS info file (optional). If not specified, the default /home/ubuntu/distrosInfo is used instead;-d DISTROS (optional) specified within quotes (e.g. \"ubuntu debian\"). If not specified, the distros defined in the DISTROS info file are used;-h (this help message)"
+    c) distrosInfo=$OPTARG
+       ;;
+    d) singleDistros="$OPTARG $singleDistros"
+       ;;
+    h) echo "Usage: $0 [OPTION]..."
+       echo "Options:"
+       echo "  -c DISTROS_INFO file (optional)."
+       echo "     Default: /home/ubuntu/distrosInfo"
+       echo "  -d DISTRO (optional) to build. Use multiple option '-d DISTRO' to build multiple distros."
+       echo "     The distros_target[DISTRO] defined in the DISTROS_INFO file are used"
+       echo "  -h (this help message)"
        exit
        ;;
   esac
@@ -19,46 +27,55 @@ shift $((OPTIND-1))  # This tells getopts to move on to the next argument.
 # IMPORTANT: distrosInfo provides ALL the maps that are used. This is
 # also why it is sourced by default!
 : ${distrosInfo:="/home/ubuntu/distrosInfo"}
-. $distrosInfo
-for K in "${!distrosMap[@]}"; do distros+=("${K}") ; done
 
-if [[ ! -z $singleDistros ]];then
-  distros=("${singleDistros[@]}")
+echo "Using DISTROS_INFO file: $distrosInfo"
+. $distrosInfo
+
+distros=""
+for distro in "${!distros_target[@]}" ; do
+  distros="${distro} ${distros}"
+done
+
+if [[ ! -z $singleDistros ]] ; then
+  distros="${singleDistros}"
 fi
 
-#distros=(centos7 debian ubuntu fedora)
+#distros="centos7 debian ubuntu fedora"
 
-for i in "${distros[@]}";do
-  source /home/ubuntu/diskimage-builder/env_source/${i}_SOURCE
-  disk-image-create -a amd64 -t raw -o /tmp/$i ${distrosMapTargets[$i]} vm  >&  /tmp/diskLOG.${i} & wait $!
-#touch /tmp/${i}.raw
-  exit_stat=$?
-  if [[ "${exit_stat}" -eq 0 ]];then
-### move away the old files
-    if [[ -a ${IMAGES_ROOT}/${i}.raw.2 ]]
-    then
-      sudo mv ${IMAGES_ROOT}/${i}.raw.2 ${IMAGES_ROOT}/${i}.raw.3
-    fi
-    if [[ -a ${IMAGES_ROOT}/${i}.raw.1 ]]
-    then
-      sudo mv ${IMAGES_ROOT}/${i}.raw.1 ${IMAGES_ROOT}/${i}.raw.2
-    fi
-    if [[ -a ${IMAGES_ROOT}/${i}.raw ]]
-    then
-     sudo mv ${IMAGES_ROOT}/${i}.raw ${IMAGES_ROOT}/${i}.raw.1
-    fi
-###
-    sudo mv /tmp/${i}.raw ${IMAGES_ROOT}/${i}.raw
-    if [[ -a ${IMAGES_ROOT}/${i}.raw.3 ]]
-    then
-      sudo rm ${IMAGES_ROOT}/${i}.raw.3
-    fi
-    if [[ -a ${IMAGES_ROOT}/ERROR_${i} ]]
-    then
-      sudo rm ${IMAGES_ROOT}/ERROR_${i}
-    fi
+echo "Building DISTROS: $distros"
+
+for i in $distros ; do
+  target=${distros_target[$i]}
+  if [[ -z "${target}" ]] ; then
+    echo "Error: distro:${i}: distros_target[$i] is not defined in $distrosInfo" | tee -a ${IMAGES_ROOT}/ERROR_${i}
+  elif [[ ! -r "/home/ubuntu/diskimage-builder/env_source/${i}_SOURCE" ]] ; then
+    echo "Error: distro:${i}: file /home/ubuntu/diskimage-builder/env_source/${i}_SOURCE does not exist or is not readable" | tee -a ${IMAGES_ROOT}/ERROR_${i}
   else
-    sudo touch ${IMAGES_ROOT}/ERROR_${i}
+    echo "Creating disk image for distro: $i [$target]"
+    source /home/ubuntu/diskimage-builder/env_source/${i}_SOURCE
+    disk-image-create -a amd64 -t raw -o /tmp/$i vm $target >& /tmp/disk-image-create.${i}.log & wait $!
+    exit_stat=$?
+    if [[ "${exit_stat}" -eq 0 ]] ; then
+      # rotate the old files
+      if [[ -a ${IMAGES_ROOT}/${i}.raw.2 ]] ; then
+        sudo mv ${IMAGES_ROOT}/${i}.raw.2 ${IMAGES_ROOT}/${i}.raw.3
+      fi
+      if [[ -a ${IMAGES_ROOT}/${i}.raw.1 ]] ; then
+        sudo mv ${IMAGES_ROOT}/${i}.raw.1 ${IMAGES_ROOT}/${i}.raw.2
+      fi
+      if [[ -a ${IMAGES_ROOT}/${i}.raw ]] ; then
+        sudo mv ${IMAGES_ROOT}/${i}.raw ${IMAGES_ROOT}/${i}.raw.1
+      fi
+      # copy result in IMAGES_ROOT
+      sudo mv /tmp/${i}.raw ${IMAGES_ROOT}/${i}.raw
+      echo "Image created: ${IMAGES_ROOT}/${i}.raw"
+      # clean up
+      if [[ -a ${IMAGES_ROOT}/ERROR_${i} ]] ; then
+        sudo rm ${IMAGES_ROOT}/ERROR_${i}
+      fi
+    else
+      echo "Error: distro:${i}: something went wrong, check /tmp/disk-image-create.${i}.log" | tee -a ${IMAGES_ROOT}/ERROR_${i}
+    fi
   fi
 done
 
