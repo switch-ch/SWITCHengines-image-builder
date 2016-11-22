@@ -65,14 +65,14 @@ for handler in logging.root.handlers:
     handler.addFilter(logging.Filter('main'))
 logger = logging.getLogger('main')
 
+# constants
+DEFAULT_IMAGES_LOCATION = '/usr/share/nginx/html/images'
+
 
 def main():
 
-    # constants
-    DEFAULT_IMAGES_LOCATION = '/usr/share/nginx/html/images'
-
     # parse args
-    parser = argparse.ArgumentParser(description="SWITCHengines Images Uploader")
+    parser = argparse.ArgumentParser(description='SWITCHengines Images Uploader')
     parser.add_argument('--os-auth-url', help='OpenStack auth URL')
     parser.add_argument('--os-username', help='OpenStack username')
     parser.add_argument('--os-password', help='OpenStack user password')
@@ -87,10 +87,10 @@ def main():
                         help='Prefix for the images names (e.g. test_)')
 
     parser.add_argument('-l', '--images-location',
-                        help="Location of the raw images (It could be an URL). Default: {}".format(DEFAULT_IMAGES_LOCATION))
+                        help="Location of the raw images. Default: {}".format(DEFAULT_IMAGES_LOCATION))
 
-    parser.add_argument('-v','--verbose', help='verbose mode', action='store_true')
-    parser.add_argument('-d','--debug', help='debug mode', action='store_true')
+    parser.add_argument('-v', '--verbose', help='verbose mode', action='store_true')
+    parser.add_argument('-d', '--debug', help='debug mode', action='store_true')
     args = parser.parse_args()
 
     if args.verbose:
@@ -100,7 +100,8 @@ def main():
 
     # validate args
     if not args.images_location and not os.path.exists(DEFAULT_IMAGES_LOCATION):
-        logger.error("Location of the raw images not defined (-l|--images-location) and default local directory {} does not exist!".format(DEFAULT_IMAGES_LOCATION))
+        logger.error("Location of the raw images not defined (-l|--images-location) "
+                     "and default local directory % does not exist!", DEFAULT_IMAGES_LOCATION)
         sys.exit(1)
 
     if not args.os_auth_url and not os.environ.get('OS_AUTH_URL'):
@@ -122,7 +123,6 @@ def main():
     if not args.os_region_name and not os.environ.get('OS_REGION_NAME'):
         logger.error("ERROR: OpenStack region name missing (--os-region-name param or env OS_REGION_NAME)")
         sys.exit(1)
-
 
     #
     # images
@@ -157,8 +157,8 @@ def main():
     # get tenant id
     try:
         tenant = keystone.projects.find(name=os_tenant_name)
-    except keystoneclient.exceptions.NotFound as e:
-        logger.error("Looking up tenant id for '{}' failed".format(os_tenant_name))
+    except keystoneclient.exceptions.NotFound:
+        logger.error("Looking up tenant id for '%s' failed", os_tenant_name)
         sys.exit(1)
     os_tenant_id = tenant.id
 
@@ -172,14 +172,14 @@ def main():
         if os_region_name in all_region_names:
             regions = all_region_names
 
-    logger.debug("regions: {}".format(regions))
+    logger.debug("regions: %s", regions)
 
     #
     # for each region do
     #
     return_code = 0
     for region in regions:
-        logger.info("Uploading images to region: {}".format(region))
+        logger.info("Uploading images to region: %s", region)
 
         # glance client for region
         glance = glance_client.Client(session=auth_session, region_name=region)
@@ -190,44 +190,37 @@ def main():
             image_info = images_info[distro_name]
             image_name = image_info['image_name']
 
-            logger.info("Processing {}@{}...".format(distro_name,region))
-            logger.debug("image_info: {}".format(image_info))
+            logger.info("Processing %s@%s...", distro_name, region)
+            logger.debug("image_info: %s", image_info)
 
             # existing image(s) to replace
             existing_owned_public_images = glance_list_owned_public_images(glance, os_tenant_id, image_info)
             for eop_image in existing_owned_public_images:
-                logger.debug("existing public image: '{}' [{}]".format(eop_image.name,
-                                                                       eop_image.id,
-                                                                       eop_image.visibility))
+                logger.debug("existing public image: '%s' [%s]", eop_image.name, eop_image.id)
 
             # create/upload the new image
-            logger.info("Creating and uploading new image '{}'".format(image_name))
+            logger.info("Creating and uploading new image '%s'", image_name)
             rc = glance_create_new_image(glance, images_location, image_info, images_name_prefix)
             if rc != 0:
                 return_code += 1
-                logger.error("{}@{}: New image '{}' -> '{}' not created!".format(distro_name,
-                                                                                 region,
-                                                                                 image_info['image_raw_source'],
-                                                                                 image_name))
+                logger.error("%s@%s: New image '%s' -> '%s' not created!",
+                             distro_name, region, image_info['image_raw_source'], image_name)
             else:
                 for eop_image in existing_owned_public_images:
 
                     now_datetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     new_name = "{}-{}".format(eop_image.name, now_datetime)
 
-                    logger.info("Set existing image '{}' to private '{}'".format(eop_image.name, new_name))
+                    logger.info("Set existing image '%s' to private '%s'", eop_image.name, new_name)
 
                     rc = glance_image_set_private(glance, eop_image, new_name, description_deprecated)
                     if rc != 0:
                         return_code += 1
-                        logger.error("{}@{}: Updating image '{} [{}]' to private '{}' failed!".format(distro_name,
-                                                                                                      region,
-                                                                                                      new_name,
-                                                                                                      eop_image.name,
-                                                                                                      eop_image.id))
-
+                        logger.error("%s@%s: Updating image '%s [%s]' to private '%s' failed!",
+                                     distro_name, region, eop_image.name, eop_image.id, new_name)
 
     return return_code
+
 
 def glance_list_owned_public_images(glance, owner_id, image_info):
     """
@@ -263,22 +256,22 @@ def glance_create_new_image(glance, images_location, image_info, image_name_pref
     image_file = os.path.join(images_location, image_raw_source)
 
     if not os.path.isfile(image_file):
-        logger.warning("image raw file:'{}' not found!".format(image_file))
+        logger.warning("image raw file:'%s' not found!", image_file)
         return 1
 
     fimg = None
     try:
         fimg = open(image_file, 'rb')
-    except Exception as e:
-        logger.error("Opening raw image file:'{}' failed".format(image_file))
+    except Exception:
+        logger.error("Opening raw image file:'%s' failed", image_file)
         return 1
 
     try:
         # image name
         image_name = image_info['image_name']
         if image_name_prefix:
-            image_name = "{}{}".format(image_name_prefix,image_name)
-        logger.debug("image_name: {}".format(image_name))
+            image_name = "{}{}".format(image_name_prefix, image_name)
+        logger.debug("image_name: %s", image_name)
 
         # image min_disk
         if image_info['image_min_disk'] == 'auto':
@@ -287,30 +280,30 @@ def glance_create_new_image(glance, images_location, image_info, image_name_pref
             image_min_disk = (imagesize/1024/1024/1024)+1
         else:
             image_min_disk = image_info['image_min_disk']
-        logger.debug("image_min_disk: {}".format(image_min_disk))
+        logger.debug("image_min_disk: %s", image_min_disk)
 
         # image min_ram
         image_min_ram = image_info['image_min_ram']
-        logger.debug("image_min_ram: {}".format(image_min_ram))
+        logger.debug("image_min_ram: %s", image_min_ram)
 
         # image properties (dictionary)
         image_properties = image_info['image_properties']
-        logger.debug("image_properies: {}".format(image_properties))
+        logger.debug("image_properies: %s", image_properties)
 
-        logger.debug("glance image create (private): '{}'".format(image_name))
+        logger.debug("glance image create (private): '%s'", image_name)
         image = glance.images.create(name=image_name,
                                      visibility='private',
                                      disk_format='raw',
                                      container_format='bare',
                                      min_disk=int(image_min_disk),
                                      min_ram=int(image_min_ram))
-        logger.debug("glance image upload: '{}' -> '{}'".format(fimg.name, image_name))
+        logger.debug("glance image upload: '%s' -> '%s'", fimg.name, image_name)
         glance.images.upload(image.id, fimg)
-        logger.debug("glance image update: visibility=public, properties={}".format(image_properties))
+        logger.debug("glance image update: visibility=public, properties=%s", image_properties)
         glance.images.update(image.id, visibility='public', **image_properties)
 
-    except Exception as e:
-        logger.exception("Creating new Glance image '{}' failed".format(image_name))
+    except Exception:
+        logger.exception("Creating new Glance image '%s' failed", image_name)
         return 1
 
     return 0
@@ -330,12 +323,13 @@ def glance_image_set_private(glance, image, new_name, new_description):
                              visibility='private',
                              name=new_name,
                              description=new_description)
-    except Exception as e:
-        logger.exception("Updating Glance image '{}' [{}] -> '{}' failed".format(image.name, image.id,
-                                                                                 new_name))
+    except Exception:
+        logger.exception("Updating Glance image '%s' [%s] -> '%s' failed",
+                         image.name, image.id, new_name)
         return 1
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
