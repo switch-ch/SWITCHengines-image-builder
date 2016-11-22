@@ -7,27 +7,27 @@ images_info = {}
 
 images_info["centos_7"] = {
     "image_raw_source": "centos7.raw",
-	"image_name": "CentOS 7 (SWITCHengines)",
+    "image_name": "CentOS 7 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
-	"image_properties": {
-    	"description": "Username: 'centos'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
+    "image_properties": {
+        "description": "Username: 'centos'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
         "hw_vif_multiqueue_enabled": "true",
         "os_flavor": "centos",
-	    "default_user": "centos",
-	    "os_version": "7.2",
-	    "requires_rdp": "false",
-	    "requires_ssh": "true"
+        "default_user": "centos",
+        "os_version": "7.2",
+        "requires_rdp": "false",
+        "requires_ssh": "true"
     }
 }
 
 images_info["debian_jessie"] = {
     "image_raw_source": "debianJessie.raw",
-	"image_name": "Debian Jessie 8 (SWITCHengines)",
+    "image_name": "Debian Jessie 8 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
-	"image_properties": {
-    	"description": "Username: 'debian'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
+    "image_properties": {
+        "description": "Username: 'debian'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
         "hw_vif_multiqueue_enabled": "true",
         "os_flavor": "debian",
         "default_user": "debian",
@@ -39,10 +39,10 @@ images_info["debian_jessie"] = {
 
 images_info["debian_wheezy"] = {
     "image_raw_source": "debianWheezy.raw",
-	"image_name": "Debian Wheezy 7 (SWITCHengines)",
+    "image_name": "Debian Wheezy 7 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
-	"image_properties": {
+    "image_properties": {
         "description": "Username: 'debian'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
         "hw_vif_multiqueue_enabled": "true",
         "os_flavor": "debian",
@@ -55,10 +55,10 @@ images_info["debian_wheezy"] = {
 
 images_info["fedora"] = {
     "image_raw_source": "fedora.raw",
-	"image_name": "Fedora release 22 (SWITCHengines)",
+    "image_name": "Fedora release 22 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
-	"image_properties": {
+    "image_properties": {
         "description": "Username: 'fedora'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
         "hw_vif_multiqueue_enabled": "true",
         "os_flavor": "fedora",
@@ -71,10 +71,10 @@ images_info["fedora"] = {
 
 images_info["ubuntu_trusty"] = {
     "image_raw_source": "ubuntu.raw",
-	"image_name": "Ubuntu Trusty 14.04 (SWITCHengines)",
+    "image_name": "Ubuntu Trusty 14.04 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
-	"image_properties": {
+    "image_properties": {
         "description": "Username: 'ubuntu'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
         "hw_vif_multiqueue_enabled": "true",
         "os_flavor": "ubuntu",
@@ -87,7 +87,7 @@ images_info["ubuntu_trusty"] = {
 
 images_info["ubuntu_xenial"] = {
     "image_raw_source": "ubuntuxenial.raw",
-	"image_name": "Ubuntu Xenial 16.04 (SWITCHengines)",
+    "image_name": "Ubuntu Xenial 16.04 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
     "image_properties": {
@@ -103,10 +103,10 @@ images_info["ubuntu_xenial"] = {
 
 images_info["rstudio"] = {
     "image_raw_source": "rstudio.raw",
-	"image_name": "RStudio Appliance (SWITCHengines)",
+    "image_name": "RStudio Appliance (SWITCHengines)",
     "image_min_ram": "1024",
     "image_min_disk": "auto",
-   	"image_properties": {
+    "image_properties": {
         "description": "Username: 'ubuntu'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
         "hw_vif_multiqueue_enabled": "true",
         "os_flavor": "ubuntu",
