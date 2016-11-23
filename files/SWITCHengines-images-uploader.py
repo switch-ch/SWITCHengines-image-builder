@@ -20,7 +20,6 @@
 # Date: 2016-11-09
 
 import argparse
-import datetime
 import logging
 import os
 import os.path
@@ -40,9 +39,7 @@ from keystoneclient.v3 import client as keystone_v3
 #
 # info from distrosInfo.py file
 #
-from distrosInfo import images_info
-from distrosInfo import description_deprecated
-
+import distrosInfo
 
 def get_environ(key, verbose=False):
     if key not in os.environ:
@@ -180,11 +177,11 @@ def main():
     logger.debug("regions: %s", regions)
 
     # which distro to upload (all or the one specified)
-    distro_names = images_info.keys()
+    distro_names = distrosInfo.images_info.keys()
     if args.distro:
         distro_names = args.distro
         for distro_name in distro_names:
-            if distro_name not in images_info:
+            if distro_name not in distrosInfo.images_info:
                 logger.error("Distro '%s' not defined in distrosInfo.py", distro_name)
                 sys.exit(1)
     logger.debug("distro_names: %s", distro_names)
@@ -202,7 +199,7 @@ def main():
         # create all the distro (images_info)
         for distro_name in distro_names:
 
-            image_info = images_info[distro_name]
+            image_info = distrosInfo.images_info[distro_name]
             image_name = image_info['image_name']
 
             logger.info("Processing %s@%s...", distro_name, region)
@@ -223,11 +220,12 @@ def main():
                 # rename the old existing public
                 for eop_image in existing_owned_public_images:
 
-                    now_datetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    new_name = "{}-{}".format(eop_image.name, now_datetime)
+                    new_name = "{}-{}".format(eop_image.name, eop_image.updated_at)
+                    new_description = distrosInfo.description_deprecated
 
-                    logger.debug("rename existing image '%s' set to private '%s'", eop_image.name, new_name)
-                    rc = glance_rename_and_set_private(glance, eop_image, new_name, description_deprecated)
+                    logger.debug("rename previous public image '%s' [%s] to private '%s'",
+                                 eop_image.name, eop_image.id, new_name)
+                    rc = glance_rename_and_set_private(glance, eop_image, new_name, new_description)
                     if rc != 0:
                         return_code += 1
                         logger.error("%s@%s: Renaming image '%s [%s]' to private '%s' failed!",
