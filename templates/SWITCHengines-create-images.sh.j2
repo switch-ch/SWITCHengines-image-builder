@@ -4,21 +4,32 @@ export PATH=${PATH}:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bi
 
 IMAGES_ROOT="{{IMAGES_ROOT}}"
 
-while getopts ":c:d:h" option; do
+while getopts ":c:d:h" option ; do
   case "$option" in
-    c) distrosInfo=$OPTARG
-       ;;
-    d) singleDistros="$OPTARG $singleDistros"
-       ;;
-    h) echo "Usage: $0 [OPTION]..."
-       echo "Options:"
-       echo "  -c DISTROS_INFO file (optional)."
-       echo "     Default: /home/ubuntu/distrosInfo"
-       echo "  -d DISTRO (optional) to build. Use multiple option '-d DISTRO' to build multiple distros."
-       echo "     The distros_target[DISTRO] defined in the DISTROS_INFO file are used"
-       echo "  -h (this help message)"
-       exit
-       ;;
+    c)
+      distrosInfo=$OPTARG
+      ;;
+    d)
+      singleDistros="$OPTARG $singleDistros"
+      ;;
+    h)
+      echo "Usage: $0 [OPTION]..."
+      echo "Options:"
+      echo "  -c DISTROS_INFO file (optional)."
+      echo "     Default: /home/ubuntu/distrosInfo"
+      echo "  -d DISTRO (optional) to build. Use multiple option '-d DISTRO' to build multiple distros."
+      echo "     The distros_target[DISTRO] defined in the DISTROS_INFO file are used"
+      echo "  -h show this help message and exit"
+      exit
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
   esac
 done
 
