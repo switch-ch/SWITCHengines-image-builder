@@ -89,8 +89,13 @@ def main():
     parser.add_argument('-l', '--images-location',
                         help="Location of the raw images. Default: {}".format(DEFAULT_IMAGES_LOCATION))
 
+    parser.add_argument('-d', '--distro',
+                        action='append',
+                        help="Upload only DISTRO (as defined in distrosInfo.py file). "
+                             "Option '-d' can be used multiple times.")
+
     parser.add_argument('-v', '--verbose', help='verbose mode', action='store_true')
-    parser.add_argument('-d', '--debug', help='debug mode', action='store_true')
+    parser.add_argument('--debug', help='debug mode', action='store_true')
     args = parser.parse_args()
 
     if args.verbose:
@@ -100,8 +105,8 @@ def main():
 
     # validate args
     if not args.images_location and not os.path.exists(DEFAULT_IMAGES_LOCATION):
-        logger.error("Location of the raw images not defined (-l|--images-location) "
-                     "and default local directory % does not exist!", DEFAULT_IMAGES_LOCATION)
+        logger.error("Location of the raw images is not defined (-l|--images-location) "
+                     "and default directory %s does not exist!", DEFAULT_IMAGES_LOCATION)
         sys.exit(1)
 
     if not args.os_auth_url and not os.environ.get('OS_AUTH_URL'):
@@ -174,6 +179,16 @@ def main():
 
     logger.debug("regions: %s", regions)
 
+    # which distro to upload (all or the one specified)
+    distro_names = images_info.keys()
+    if args.distro:
+        distro_names = args.distro
+        for distro_name in distro_names:
+            if distro_name not in images_info:
+                logger.error("Distro '%s' not defined in distrosInfo.py", distro_name)
+                sys.exit(1)
+    logger.debug("distro_names: %s", distro_names)
+
     #
     # for each region do
     #
@@ -185,7 +200,7 @@ def main():
         glance = glance_client.Client(session=auth_session, region_name=region)
 
         # create all the distro (images_info)
-        for distro_name in images_info:
+        for distro_name in distro_names:
 
             image_info = images_info[distro_name]
             image_name = image_info['image_name']
@@ -194,29 +209,28 @@ def main():
             logger.debug("image_info: %s", image_info)
 
             # existing image(s) to replace
+            # list them BEFORE creating the new public image!!!
             existing_owned_public_images = glance_list_owned_public_images(glance, os_tenant_id, image_info)
-            for eop_image in existing_owned_public_images:
-                logger.debug("existing public image: '%s' [%s]", eop_image.name, eop_image.id)
 
             # create/upload the new image
-            logger.info("Creating and uploading new image '%s'", image_name)
+            logger.info("Uploading new image '%s'", image_name)
             rc = glance_create_new_image(glance, images_location, image_info, images_name_prefix)
             if rc != 0:
                 return_code += 1
                 logger.error("%s@%s: New image '%s' -> '%s' not created!",
                              distro_name, region, image_info['image_raw_source'], image_name)
             else:
+                # rename the old existing public
                 for eop_image in existing_owned_public_images:
 
                     now_datetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     new_name = "{}-{}".format(eop_image.name, now_datetime)
 
-                    logger.info("Set existing image '%s' to private '%s'", eop_image.name, new_name)
-
-                    rc = glance_image_set_private(glance, eop_image, new_name, description_deprecated)
+                    logger.debug("rename existing image '%s' set to private '%s'", eop_image.name, new_name)
+                    rc = glance_rename_and_set_private(glance, eop_image, new_name, description_deprecated)
                     if rc != 0:
                         return_code += 1
-                        logger.error("%s@%s: Updating image '%s [%s]' to private '%s' failed!",
+                        logger.error("%s@%s: Renaming image '%s [%s]' to private '%s' failed!",
                                      distro_name, region, eop_image.name, eop_image.id, new_name)
 
     return return_code
@@ -309,9 +323,9 @@ def glance_create_new_image(glance, images_location, image_info, image_name_pref
     return 0
 
 
-def glance_image_set_private(glance, image, new_name, new_description):
+def glance_rename_and_set_private(glance, image, new_name, new_description):
     """
-    Set the image to private, with a new name and new description
+    Rename an image with a new name and new description, and set it to private
     :param glance: glance client
     :param image: image
     :param new_name: new name for image
