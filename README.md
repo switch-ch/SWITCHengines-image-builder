@@ -8,23 +8,29 @@ Create your config file:
 
 and edit the variables.
 
-Source your OpenStack credentials:
-
+Source your user OpenStack credentials:
 
     source ~/.openrc
-
 
 Run the playbook
 
     export ANSIBLE_HOST_KEY_CHECKING=False
     ansible-playbook main.yaml
 
+This will create an image builder VM, with all the required packages installed 
+and configured.
 
 ## Build the images
 
-Now you can login to the instance and use the script:
+Now you can login to the instance and use the script to build all the images:
 
     ./SWITCHengines-create-images.sh
+
+Or you can build single distros using the `-d DISTRO` option, like:
+
+    ./SWITCHengines-create-images.sh -d ubuntu -d centos7
+
+The distro names are defined in the `distrosInfo` file
 
 You can check the progress of the script with the logfiles produced in
 the `/tmp` folder.
@@ -37,22 +43,31 @@ http://ip.domain/images/
 
 ## Upload images to glance
 
-We also provide a tool to upload the new created images to glance:
-
-    SWITCHengines-images-uploader.py --all-regions
-
 You will need openstack admin rights to run this tool.
 
-The new images will be uploaded as public.
+Use the tool to upload the new created images to glance. To 
+upload all the images in both region (S1/S2 or LS/ZH) use:
+
+    ./SWITCHengines-images-uploader.py --all-regions
+
+Or to upload some selected distros use the `-d DISTRO` option, like:
+
+    ./SWITCHengines-images-uploader.py -a -d ubuntu_trusty -d ubuntu_xenial
+
+The distro names are defined in the `distrosInfo.py` file.
+
+The new images will be uploaded as **public**.
 
 This tool is meant to refresh existing images.  It will change the
 name of old version of the images already present, and make them
-non-public.  The old images will have in the name the timestamp of
-when they have been deactivated.  The users will not be able to start
-new VMs using the old images.  However note that old images cannot be
-deleted from Glance, because there are possibly Cinder volumes and
-Nova ephemeral volumes depending on the old Glance images.  This is a
-consequence of the CoW features of RBD.
+**private**.  The archived images will have in the name the timestamp of
+when they were initally created.  
+
+The users will not be able to start new VMs using the old images.  
+However note that old images cannot be deleted from Glance, 
+because there are possibly Cinder volumes and Nova ephemeral volumes
+depending on the old Glance images. This is a consequence of the 
+CoW features of RBD.
 
 ## Testing images
 
@@ -64,14 +79,13 @@ running the images privately on your tenant.
  * Ubuntu: `ssh ubuntu@<FLOATING_IP>`
  * Debian: `ssh debian@<FLOATING_IP>`
  * Centos: `ssh centos@<FLOATING_IP>`
+ * Fedora: `ssh fedora@<FLOATING_IP>`
 
 ### check common commands
 
-```bash
-hostname
-sudo su
-init 6
-```
+    hostname
+    sudo su
+    init 6
 
 Also check the hostname on the console.  Can also be checked via ssh
 with: `cat /dev/vcs1`
@@ -84,15 +98,14 @@ Check  the file `/etc/apt/sources.list`
  * Automatic Security Updates enabled?
 
 In the file `/etc/apt/apt.conf.d/20auto-upgrades`
-```
-APT::Periodic::Update-Package-Lists "1";
-APT::Periodic::Unattended-Upgrade "1";
-```
+
+    APT::Periodic::Update-Package-Lists "1";
+    APT::Periodic::Unattended-Upgrade "1";
 
 Can also be checked with something like:
 
-`apt-config dump | grep Periodic`
+    apt-config dump | grep Periodic
 
 In file `/etc/ntp.conf`, the pool should be in Switzerland
 
-`ntpq -p`
+    ntpq -p
