@@ -220,7 +220,7 @@ def main():
                 # rename the old existing public
                 for eop_image in existing_owned_public_images:
 
-                    new_name = "{}-{}".format(eop_image.name, eop_image.updated_at)
+                    new_name = "{}-{}".format(eop_image.name, eop_image.created_at)
                     new_description = distrosInfo.description_deprecated
 
                     logger.debug("rename previous public image '%s' [%s] to private '%s'",
