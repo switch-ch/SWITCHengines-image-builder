@@ -37,7 +37,18 @@ Or you can build single distros using the `-d DISTRO` option, like:
 
     ./SWITCHengines-create-images.sh -d ubuntu -d centos7
 
-The distro names are defined in the `distrosInfo` file
+The distro names are defined in the `distrosInfo` file:
+
+| Distro Name | Release | Raw File |
+| ----------- | ------- | -------- |
+| centos7  | Centos 7 | centos7.raw |
+| ubuntu  | Ubuntu 14.04 | ubuntu.raw |
+| ubuntuxenial  | Ubuntu 16.04 | ubuntuxenial.raw |
+| debianWheezy  | Debian 7 | debianWheezy.raw |
+| debianJessie  | Debian 8 | debianJessie.raw |
+| fedora  | Fedora 22 | fedora.raw |
+| rstudio  | RStudio Appliance | rstudio.raw |
+| zepplin  | Spark Zepplin | zepplin.raw |
 
 You can check the progress of the script with the logfiles produced in
 the `/tmp` folder.
@@ -55,14 +66,25 @@ http://ip.domain/images/
 Use the tool to upload the new created images to glance. To 
 upload all the images in both region (S1/S2 or LS/ZH) use:
 
-    source ~/.openrc-admin
+    source ~/.openrc-s2-admin
     ./SWITCHengines-images-uploader.py -v --all-regions
 
 Or to upload some selected distros use the `-d DISTRO` option, like:
 
     ./SWITCHengines-images-uploader.py  -v --all-regions -d ubuntu_trusty -d ubuntu_xenial
 
-The distro names are defined in the `distrosInfo.py` file.
+The distro names are defined in the `distrosInfo.py` file:
+
+| Distro Name | Release | Raw File | SWITCHengines Image |
+| ----------- | ------- | -------- | ------------------- |
+| centos_7  | Centos 7 | centos7.raw | CentOS 7 (SWITCHengines) |
+| ubuntu_trusty  | Ubuntu 14.04 | ubuntu.raw | Ubuntu Trusty 14.04 (SWITCHengines) |
+| ubuntu_xenial  | Ubuntu 16.04 | ubuntuxenial.raw | Ubuntu Xenial 16.04 (SWITCHengines) |
+| debian_wheezy  | Debian 7 | debianWheezy.raw | Debian Wheezy 7 (SWITCHengines) |
+| debian_jessie  | Debian 8 | debianJessie.raw | Debian Jessie 8 (SWITCHengines) |
+| fedora  | Fedora 22 | fedora.raw | Fedora release 22 (SWITCHengines) |
+| rstudio  | RStudio Appliance | rstudio.raw | RStudio Appliance (SWITCHengines) |
+| zepplin  | Spark Zepplin | zepplin.raw | Spark Zeppelin (SWITCHengines) |
 
 The new images will be uploaded as **public**.
 
