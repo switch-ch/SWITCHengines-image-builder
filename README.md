@@ -6,7 +6,7 @@ Create your config file:
 
     cp vars.yaml.template vars.yaml
 
-and edit the variables:
+and edit the `vars.yaml` file:
 
     vmname: images-builder-ansible
     image: Ubuntu Trusty 14.04 (SWITCHengines)
