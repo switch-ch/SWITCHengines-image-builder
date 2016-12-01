@@ -10,14 +10,14 @@ and edit the `vars.yaml` file:
 
     vmname: images-builder-ansible
     image: Ubuntu Trusty 14.04 (SWITCHengines)
-    flavor: c1.xlarge
-    key_name: valery-rsa
+    flavor: m1.xlarge
+    key_name: YOUR_KEY_NAME
     net_name: private
     ansible_user: ubuntu
 
 Source your user OpenStack credentials:
 
-    source ~/.openrc
+    source ~/.openrc-user
 
 Run the playbook
 
@@ -55,6 +55,7 @@ http://ip.domain/images/
 Use the tool to upload the new created images to glance. To 
 upload all the images in both region (S1/S2 or LS/ZH) use:
 
+    source ~/.openrc-admin
     ./SWITCHengines-images-uploader.py --all-regions
 
 Or to upload some selected distros use the `-d DISTRO` option, like:
