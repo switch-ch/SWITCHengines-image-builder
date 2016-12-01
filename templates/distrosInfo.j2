@@ -1,9 +1,8 @@
 #!/bin/bash
-#distros and the official names of the images must be in a one to one correspondance!
 
-declare -A distros_target     # Create an associative array
+declare -A distros_target     # hash table
 
-# distros
+# distros [NAME] = diskbuilder target element
 distros_target[centos7]="centos7"
 distros_target[debianWheezy]="debian"
 distros_target[ubuntu]="ubuntu"
