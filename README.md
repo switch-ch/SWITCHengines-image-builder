@@ -6,7 +6,14 @@ Create your config file:
 
     cp vars.yaml.template vars.yaml
 
-and edit the variables.
+and edit the variables:
+
+    vmname: images-builder-ansible
+    image: Ubuntu Trusty 14.04 (SWITCHengines)
+    flavor: c1.xlarge
+    key_name: valery-rsa
+    net_name: private
+    ansible_user: ubuntu
 
 Source your user OpenStack credentials:
 
