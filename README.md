@@ -43,7 +43,7 @@ http://ip.domain/images/
 
 ## Upload images to glance
 
-You will need openstack admin rights to run this tool.
+**IMPORTANT**: You will need an OpenStack admin `openrc` file to run this tool.
 
 Use the tool to upload the new created images to glance. To 
 upload all the images in both region (S1/S2 or LS/ZH) use:
