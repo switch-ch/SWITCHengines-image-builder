@@ -37,7 +37,7 @@ Or you can build single distros using the `-d DISTRO` option, like:
 
     ./SWITCHengines-create-images.sh -d ubuntu -d centos7
 
-The distro names are defined in the `distrosInfo` file:
+The distro names are defined in the [distrosInfo](templates/distrosInfo.j2) file:
 
 | Distro Name | Release | Raw File |
 | ----------- | ------- | -------- |
@@ -73,7 +73,7 @@ Or to upload some selected distros use the `-d DISTRO` option, like:
 
     ./SWITCHengines-images-uploader.py  -v --all-regions -d ubuntu_trusty -d ubuntu_xenial
 
-The distro names are defined in the `distrosInfo.py` file:
+The distro names are defined in the [distrosInfo.py](files/distroInfo.py) file:
 
 | Distro Name | Release | Raw File | SWITCHengines Image |
 | ----------- | ------- | -------- | ------------------- |
