@@ -48,7 +48,7 @@ The distro names are defined in the [distrosInfo](templates/distrosInfo.j2) file
 | debianJessie  | Debian 8 | debianJessie.raw |
 | fedora  | Fedora 22 | fedora.raw |
 | rstudio  | RStudio Appliance | rstudio.raw |
-| zepplin  | Spark Zepplin | zepplin.raw |
+| zeppelin  | Spark Zeppelin | zeppelin.raw |
 
 You can check the progress of the script with the logfiles produced in
 the `/tmp` folder.
@@ -84,7 +84,7 @@ The distro names are defined in the [distrosInfo.py](files/distroInfo.py) file:
 | debian_jessie  | Debian 8 | debianJessie.raw | Debian Jessie 8 (SWITCHengines) |
 | fedora  | Fedora 22 | fedora.raw | Fedora release 22 (SWITCHengines) |
 | rstudio  | RStudio Appliance | rstudio.raw | RStudio Appliance (SWITCHengines) |
-| zepplin  | Spark Zepplin | zepplin.raw | Spark Zeppelin (SWITCHengines) |
+| zeppelin  | Spark Zeppelin | zeppelin.raw | Spark Zeppelin (SWITCHengines) |
 
 The new images will be uploaded as **public**.
 
@@ -139,3 +139,8 @@ Can also be checked with something like:
 In file `/etc/ntp.conf`, the pool should be in Switzerland
 
     ntpq -p
+
+### check the Zeppelin installation in browser
+([the TCP port 8080 must be open](https://help.switch.ch/fr/engines/documentation/switch-official-images/zeppelin/))
+
+    http://FLOATING_IP:8080
