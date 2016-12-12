@@ -93,9 +93,23 @@
   - name: git clone SWITCH repo for diskimage-builder
     git: repo=https://github.com/switch-ch/diskimage-builder.git dest=/home/ubuntu/diskimage-builder force=yes version=SWITCHengines
 
+  - name: Check if images folder exists
+    stat: path='{{IMAGES_ROOT}}'
+    register: images_folder
+
+  - name: Format volume
+    become: True
+    filesystem: fstype=ext4 dev=/dev/vdb
+    when: images_folder.stat.exists == False
+
   - name: Create web root for Nginx
     become: True
     file: path='{{IMAGES_ROOT}}' state=directory mode=0777
+
+  - name: Manage fstab
+    become: True
+    mount: name='{{IMAGES_ROOT}}' src=/dev/vdb opts=nobootwait fstype=ext4 state=mounted
+    when: images_folder.stat.exists == False
 
   - name: Create nginx config
     become: True
