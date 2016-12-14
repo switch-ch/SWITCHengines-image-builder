@@ -19,11 +19,6 @@
       remote_ip_prefix: 0.0.0.0/0
   - name: Create volume
     os_volume:
-      auth:
-        auth_url: "{{ lookup('env', 'OS_AUTH_URL') }}"
-        username: "{{ lookup('env', 'OS_USERNAME') }}"
-        password: "{{ lookup('env', 'OS_PASSWORD') }}"
-        project_name: "{{ lookup('env', 'OS_TENANT_NAME') }}"
       display_name: "{{ volname }}"
       size: "{{ volsize }}"
   - name: launch an instance
@@ -48,9 +43,9 @@
   - name: Add new VM to ansible inventory
     add_host:
       name: imagebuilderansible
-      ansible_host: "{{osinstance.server.public_v4}}"
-      volume_device: "{{osinstance.server.volumes[0].device}}"
-      ansible_user: "{{ansible_user}}"
+      ansible_host: "{{ osinstance.server.public_v4 }}"
+      volume_device: "{{ osinstance.server.volumes[0].device }}"
+      ansible_user: "{{ ansible_user }}"
       ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 
 - name: Configure imagebuilder host
