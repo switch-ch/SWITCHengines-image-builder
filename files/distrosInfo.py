@@ -15,7 +15,7 @@ images_info["centos_7"] = {
         "hw_vif_multiqueue_enabled": "true",
         "os_flavor": "centos",
         "default_user": "centos",
-        "os_version": "7.2",
+        "os_version": "7.3",
         "requires_rdp": "false",
         "requires_ssh": "true"
     }
