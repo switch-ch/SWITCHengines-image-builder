@@ -3,7 +3,7 @@ volname: image-builder-ansible
 volsize: 100
 secgroups: default
 image: Ubuntu Trusty 14.04 (SWITCHengines)
-flavor: m1.xlarge
+flavor: c1.large
 key_name: YOUR_KEY_NAME
 net_name: private
 ansible_user: ubuntu
