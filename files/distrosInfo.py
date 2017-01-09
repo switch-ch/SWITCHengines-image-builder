@@ -39,7 +39,7 @@ images_info["debian_jessie"] = {
 
 images_info["fedora"] = {
     "image_raw_source": "fedora.raw",
-    "image_name": "Fedora release 22 (SWITCHengines)",
+    "image_name": "Fedora 24 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
     "image_properties": {
