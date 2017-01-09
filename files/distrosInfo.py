@@ -37,22 +37,6 @@ images_info["debian_jessie"] = {
     }
 }
 
-images_info["debian_wheezy"] = {
-    "image_raw_source": "debianWheezy.raw",
-    "image_name": "Debian Wheezy 7 (SWITCHengines)",
-    "image_min_ram": "512",
-    "image_min_disk": "auto",
-    "image_properties": {
-        "description": "Username: 'debian'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
-        "hw_vif_multiqueue_enabled": "true",
-        "os_flavor": "debian",
-        "default_user": "debian",
-        "os_version": "Wheezy 7.11",
-        "requires_rdp": "false",
-        "requires_ssh": "true"
-    }
-}
-
 images_info["fedora"] = {
     "image_raw_source": "fedora.raw",
     "image_name": "Fedora release 22 (SWITCHengines)",
