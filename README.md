@@ -73,7 +73,7 @@ Or to upload some selected distros use the `-d DISTRO` option, like:
 
     ./SWITCHengines-images-uploader.py  -v --all-regions -d ubuntu_trusty -d ubuntu_xenial
 
-The distro names are defined in the [distrosInfo.py](files/distroInfo.py) file:
+The distro names are defined in the [distrosInfo.py](files/distrosInfo.py) file:
 
 | Distro Name | Release | Raw File | SWITCHengines Image |
 | ----------- | ------- | -------- | ------------------- |
