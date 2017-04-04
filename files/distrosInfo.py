@@ -39,7 +39,7 @@ images_info["debian_jessie"] = {
 
 images_info["fedora"] = {
     "image_raw_source": "fedora.raw",
-    "image_name": "Fedora 24 (SWITCHengines)",
+    "image_name": "Fedora 25 (SWITCHengines)",
     "image_min_ram": "512",
     "image_min_disk": "auto",
     "image_properties": {
@@ -47,7 +47,7 @@ images_info["fedora"] = {
         "hw_vif_multiqueue_enabled": "true",
         "os_flavor": "fedora",
         "default_user": "fedora",
-        "os_version": "22",
+        "os_version": "25",
         "requires_rdp": "false",
         "requires_ssh": "true"
     }
