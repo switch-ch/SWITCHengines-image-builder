@@ -58,9 +58,9 @@ echo "Building DISTROS: $distros"
 for i in $distros ; do
   target=${distros_target[$i]}
   if [[ -z "${target}" ]] ; then
-    echo "Error: distro:${i}: distros_target[$i] is not defined in $distrosInfo" | tee -a ${IMAGES_ROOT}/ERROR_${i}
+    echo "Error: distro:${i}: distros_target[$i] is not defined in $distrosInfo" | sudo tee -a ${IMAGES_ROOT}/ERROR_${i}
   elif [[ ! -r "/home/ubuntu/diskimage-builder/env_source/${i}_SOURCE" ]] ; then
-    echo "Error: distro:${i}: file /home/ubuntu/diskimage-builder/env_source/${i}_SOURCE does not exist or is not readable" | tee -a ${IMAGES_ROOT}/ERROR_${i}
+    echo "Error: distro:${i}: file /home/ubuntu/diskimage-builder/env_source/${i}_SOURCE does not exist or is not readable" | sudo tee -a ${IMAGES_ROOT}/ERROR_${i}
   else
     echo "Creating disk image for distro: $i [$target]"
     source /home/ubuntu/diskimage-builder/env_source/${i}_SOURCE
@@ -85,7 +85,7 @@ for i in $distros ; do
         sudo rm ${IMAGES_ROOT}/ERROR_${i}
       fi
     else
-      echo "Error: distro:${i}: something went wrong, check /tmp/disk-image-create.${i}.log" | tee -a ${IMAGES_ROOT}/ERROR_${i}
+      echo "Error: distro:${i}: something went wrong, check /tmp/disk-image-create.${i}.log" | sudo tee -a ${IMAGES_ROOT}/ERROR_${i}
     fi
   fi
 done
