@@ -93,7 +93,6 @@ images_info["rstudio"] = {
     "image_properties": {
         "description": "Username: 'ubuntu'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
         "hw_vif_multiqueue_enabled": "true",
-        "os_flavor": "ubuntu",
         "default_user": "ubuntu",
         "os_version": "Trusty 14.04",
         "requires_rdp": "false",
@@ -109,7 +108,6 @@ images_info["zeppelin"] = {
     "image_properties": {
         "description": "Username: 'ubuntu'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
         "hw_vif_multiqueue_enabled": "true",
-        "os_flavor": "ubuntu",
         "default_user": "ubuntu",
         "os_version": "Trusty 14.04",
         "requires_rdp": "false",
