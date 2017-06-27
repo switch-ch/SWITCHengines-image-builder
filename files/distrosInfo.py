@@ -33,7 +33,7 @@ images_info["debian_jessie"] = {
         "os_flavor": "debian",
         "os_flavor_name": "Debian (SWITCHengines)",
         "default_user": "debian",
-        "os_version": "Jessie 8.6",
+        "os_version": "Jessie 8.8",
         "requires_rdp": "false",
         "requires_ssh": "true"
     }
