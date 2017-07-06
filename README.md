@@ -99,12 +99,12 @@ because there are possibly Cinder volumes and Nova ephemeral volumes
 depending on the old Glance images. This is a consequence of the 
 CoW features of RBD.
 
-## Upload the images to the HTTP images repository ====
+## Upload the images to the HTTP images repository
 
-When an image has been built, it should also be copied (e.g. using ''scp'') to 
+When an image has been built, it should also be copied (e.g. using `scp`) to 
 the HTTP images archive on http://images.cloud.switch.ch/, corresponding to
-''/var/www/html/engines/images'' on ''images.cloud.switch.ch'' alias 
-''ubuntu.mirror.cloud.switch.ch''.  
+`/var/www/html/engines/images` on `images.cloud.switch.ch` alias 
+`ubuntu.mirror.cloud.switch.ch`.
 
     today=`date +%Y-%m-%d`
     ssh proto@ubuntu.mirror.cloud.switch.ch "mkdir /engines-repo/engines/images/$today/"
