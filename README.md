@@ -59,7 +59,7 @@ When everything is okay, you will find the images in
 The images are served with nginx over http at the URL
 http://ip.domain/images/
 
-## Upload images to glance
+## Upload the images to Glance
 
 **IMPORTANT**: You will need an OpenStack admin `openrc` file to run this tool.
 
@@ -82,7 +82,7 @@ The distro names are defined in the [distrosInfo.py](files/distrosInfo.py) file:
 | ubuntu_xenial  | Ubuntu 16.04 | ubuntuxenial.raw | Ubuntu Xenial 16.04 (SWITCHengines) |
 | debian_wheezy  | Debian 7 | debianWheezy.raw | Debian Wheezy 7 (SWITCHengines) |
 | debian_jessie  | Debian 8 | debianJessie.raw | Debian Jessie 8 (SWITCHengines) |
-| fedora  | Fedora 22 | fedora.raw | Fedora release 22 (SWITCHengines) |
+| fedora  | Fedora 25 | fedora.raw | Fedora release 25 (SWITCHengines) |
 | rstudio  | RStudio Appliance | rstudio.raw | RStudio Appliance (SWITCHengines) |
 | zeppelin  | Spark Zeppelin | zeppelin.raw | Spark Zeppelin (SWITCHengines) |
 
@@ -98,6 +98,18 @@ However note that old images cannot be deleted from Glance,
 because there are possibly Cinder volumes and Nova ephemeral volumes
 depending on the old Glance images. This is a consequence of the 
 CoW features of RBD.
+
+## Upload the images to the HTTP images repository ====
+
+When an image has been built, it should also be copied (e.g. using ''scp'') to 
+the HTTP images archive on http://images.cloud.switch.ch/, corresponding to
+''/var/www/html/engines/images'' on ''images.cloud.switch.ch'' alias 
+''ubuntu.mirror.cloud.switch.ch''.  
+
+    today=`date +%Y-%m-%d`
+    ssh proto@ubuntu.mirror.cloud.switch.ch "mkdir /engines-repo/engines/images/$today/"
+    scp /usr/share/nginx/html/images/*.raw proto@ubuntu.mirror.cloud.switch.ch:/engines-repo/engines/images/$today/
+
 
 ## Testing images
 
