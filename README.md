@@ -107,8 +107,8 @@ the HTTP images archive on http://images.cloud.switch.ch/, corresponding to
 `ubuntu.mirror.cloud.switch.ch`.
 
     today=`date +%Y-%m-%d`
-    ssh proto@ubuntu.mirror.cloud.switch.ch "mkdir /engines-repo/engines/images/$today/"
-    scp /usr/share/nginx/html/images/*.raw proto@ubuntu.mirror.cloud.switch.ch:/engines-repo/engines/images/$today/
+    ssh ubuntu.mirror.cloud.switch.ch "mkdir /engines-repo/engines/images/$today/"
+    scp /usr/share/nginx/html/images/*.raw ubuntu.mirror.cloud.switch.ch:/engines-repo/engines/images/$today/
 
 
 ## Testing images
