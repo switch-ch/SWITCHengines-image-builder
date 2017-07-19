@@ -39,6 +39,23 @@ images_info["debian_jessie"] = {
     }
 }
 
+images_info["debian_stretch"] = {
+    "image_raw_source": "debianStretch.raw",
+    "image_name": "Debian Stretch 9 (SWITCHengines)",
+    "image_min_ram": "512",
+    "image_min_disk": "auto",
+    "image_properties": {
+        "description": "Username: 'debian'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
+        "hw_vif_multiqueue_enabled": "true",
+        "os_flavor": "debian",
+        "os_flavor_name": "Debian (SWITCHengines)",
+        "default_user": "debian",
+        "os_version": "Stretch 9",
+        "requires_rdp": "false",
+        "requires_ssh": "true"
+    }
+}
+
 images_info["fedora"] = {
     "image_raw_source": "fedora.raw",
     "image_name": "Fedora 25 (SWITCHengines)",
