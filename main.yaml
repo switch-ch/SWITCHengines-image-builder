@@ -82,6 +82,10 @@
     become: True
     pip: name=python-glanceclient
 
+  - name: pip install networkx
+    become: True
+    pip: name=networkx
+
   - name: git clone dib-utils
     git: repo=https://github.com/openstack/dib-utils.git dest=/home/ubuntu/dib-utils force=yes
 
