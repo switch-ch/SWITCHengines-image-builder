@@ -92,6 +92,10 @@
   - name: git clone SWITCH repo for diskimage-builder
     git: repo=https://github.com/switch-ch/diskimage-builder.git dest=/home/ubuntu/diskimage-builder force=yes version=SWITCHengines
 
+  - name: Install diskimage-builder
+    become: True
+    shell: "cd /home/ubuntu/diskimage-builder ; python setup.py install"
+
   - name: Check if images folder exists
     stat: path='{{IMAGES_ROOT}}'
     register: images_folder
