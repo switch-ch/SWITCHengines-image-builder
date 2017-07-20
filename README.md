@@ -44,8 +44,8 @@ The distro names are defined in the [distrosInfo](templates/distrosInfo.j2) file
 | centos7  | Centos 7 | centos7.raw |
 | ubuntu  | Ubuntu 14.04 | ubuntu.raw |
 | ubuntuxenial  | Ubuntu 16.04 | ubuntuxenial.raw |
-| debianWheezy  | Debian 7 | debianWheezy.raw |
 | debianJessie  | Debian 8 | debianJessie.raw |
+| debianStretch  | Debian 9 | debianStretch.raw |
 | fedora  | Fedora 22 | fedora.raw |
 | rstudio  | RStudio Appliance | rstudio.raw |
 | zeppelin  | Spark Zeppelin | zeppelin.raw |
@@ -80,8 +80,8 @@ The distro names are defined in the [distrosInfo.py](files/distrosInfo.py) file:
 | centos_7  | Centos 7 | centos7.raw | CentOS 7 (SWITCHengines) |
 | ubuntu_trusty  | Ubuntu 14.04 | ubuntu.raw | Ubuntu Trusty 14.04 (SWITCHengines) |
 | ubuntu_xenial  | Ubuntu 16.04 | ubuntuxenial.raw | Ubuntu Xenial 16.04 (SWITCHengines) |
-| debian_wheezy  | Debian 7 | debianWheezy.raw | Debian Wheezy 7 (SWITCHengines) |
 | debian_jessie  | Debian 8 | debianJessie.raw | Debian Jessie 8 (SWITCHengines) |
+| debian_stretch  | Debian 9 | debianStretch.raw | Debian Stretch 9 (SWITCHengines) |
 | fedora  | Fedora 25 | fedora.raw | Fedora release 25 (SWITCHengines) |
 | rstudio  | RStudio Appliance | rstudio.raw | RStudio Appliance (SWITCHengines) |
 | zeppelin  | Spark Zeppelin | zeppelin.raw | Spark Zeppelin (SWITCHengines) |
