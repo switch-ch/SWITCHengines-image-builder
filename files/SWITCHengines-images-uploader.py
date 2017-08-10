@@ -206,25 +206,34 @@ def main():
 
             # create/upload the new image
             logger.info("Uploading new image '%s'", image_name)
-            rc = glance_create_new_image(glance, images_location, image_info, images_name_prefix)
-            if rc != 0:
+            image = glance_create_new_image(glance, images_location, image_info, images_name_prefix)
+            if not image:
                 return_code += 1
-                logger.error("%s@%s: New image '%s' -> '%s' not created!",
+                logger.error("%s@%s: New image '%s' -> '%s' not uploaded!",
                              distro_name, region, image_info['image_raw_source'], image_name)
             else:
-                # rename the old existing public
-                for eop_image in existing_owned_public_images:
 
-                    new_name = "{}-{}".format(eop_image.name, eop_image.created_at)
-                    new_description = distrosInfo.description_deprecated
+                # set new image public
+                logger.info("Updating new image '%s' (public)", image.name)
+                rc = glance_update_and_set_public(glance, image, image_info)
+                if rc != 0:
+                    return_code += 1
+                    logger.error("%s@%s: New image '%s' [%s] not updated (public)",
+                                 distro_name, region, image.name, image.id)
+                else:
+                    # rename the old existing public images and set private
+                    for eop_image in existing_owned_public_images:
 
-                    logger.debug("rename previous public image '%s' [%s] to private '%s'",
-                                 eop_image.name, eop_image.id, new_name)
-                    rc = glance_rename_and_set_private(glance, eop_image, new_name, new_description)
-                    if rc != 0:
-                        return_code += 1
-                        logger.error("%s@%s: Renaming image '%s [%s]' to private '%s' failed!",
-                                     distro_name, region, eop_image.name, eop_image.id, new_name)
+                        new_name = "{}-{}".format(eop_image.name, eop_image.created_at)
+                        new_description = distrosInfo.description_deprecated
+
+                        logger.debug("rename previous public image '%s' [%s] to private '%s'",
+                                     eop_image.name, eop_image.id, new_name)
+                        rc = glance_rename_and_set_private(glance, eop_image, new_name, new_description)
+                        if rc != 0:
+                            return_code += 1
+                            logger.error("%s@%s: Renaming image '%s [%s]' to private '%s' failed!",
+                                         distro_name, region, eop_image.name, eop_image.id, new_name)
 
     return return_code
 
@@ -251,12 +260,12 @@ def glance_list_owned_public_images(glance, owner_id, image_info):
 
 def glance_create_new_image(glance, images_location, image_info, image_name_prefix=None):
     """
-    Creates a new Glance public image
+    Creates and upload a new Glance image (private)
     :param glance: glance client
     :param images_location: location of the raw image source
     :param image_info: image_info dictionary
     :param image_name_prefix: image name prefix to add
-    :return: 0 on success, >0 on error
+    :return: image on success, None on error
     """
     # image raw file path
     image_raw_source = image_info['image_raw_source']
@@ -264,14 +273,14 @@ def glance_create_new_image(glance, images_location, image_info, image_name_pref
 
     if not os.path.isfile(image_file):
         logger.warning("image raw file:'%s' not found!", image_file)
-        return 1
+        return None
 
     fimg = None
     try:
         fimg = open(image_file, 'rb')
     except Exception:
         logger.error("Opening raw image file:'%s' failed", image_file)
-        return 1
+        return None
 
     try:
         # image name
@@ -306,11 +315,28 @@ def glance_create_new_image(glance, images_location, image_info, image_name_pref
                                      min_ram=int(image_min_ram))
         logger.debug("glance image upload: '%s' -> '%s'", fimg.name, image_name)
         glance.images.upload(image.id, fimg)
-        logger.debug("glance image update: visibility=public, properties=%s", image_properties)
-        glance.images.update(image.id, visibility='public', **image_properties)
 
     except Exception:
-        logger.exception("Creating new Glance image '%s' failed", image_name)
+        logger.exception("Creating and uploading Glance image '%s' failed", image_name)
+        return None
+
+    return image
+
+
+def glance_update_and_set_public(glance, image, image_info):
+    """
+    Update image properties and set it public.
+    :param glance: glance client
+    :param images: the image to update
+    :param image_info: image_info dictionary
+    :return: 0 on success, >0 on error
+    """
+    image_properties = image_info['image_properties']
+    try:
+        logger.debug("glance image update: visibility=public, properties=%s", image_properties)
+        glance.images.update(image.id, visibility='public', **image_properties)
+    except Exception:
+        logger.exception("Updating (-> public) Glance image '%s' [%s] failed", image.name, image.id)
         return 1
 
     return 0
@@ -331,7 +357,7 @@ def glance_rename_and_set_private(glance, image, new_name, new_description):
                              name=new_name,
                              description=new_description)
     except Exception:
-        logger.exception("Updating Glance image '%s' [%s] -> '%s' failed",
+        logger.exception("Renaming (-> private) Glance image '%s' [%s] -> '%s' failed",
                          image.name, image.id, new_name)
         return 1
 
