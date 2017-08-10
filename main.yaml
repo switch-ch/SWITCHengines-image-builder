@@ -74,6 +74,10 @@
       - python-pip
       - python-dev
 
+  - name: pip upgrade
+    become: True
+    pip: name=pip state=latest
+
   - name: pip install python-keystoneclient
     become: True
     pip: name=python-keystoneclient
