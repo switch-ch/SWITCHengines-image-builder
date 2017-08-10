@@ -101,7 +101,7 @@ images_info["ubuntu_gpu"] = {
         "os_flavor": "ubuntu",
         "os_flavor_name": "Ubuntu (SWITCHengines)",
         "default_user": "ubuntu",
-        "os_version": "Xenial 16.04",
+        "os_version": "Xenial 16.04 (GPU)",
         "requires_rdp": "false",
         "requires_ssh": "true"
     }
