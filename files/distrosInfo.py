@@ -90,6 +90,23 @@ images_info["ubuntu_trusty"] = {
     }
 }
 
+images_info["ubuntu_gpu"] = {
+    "image_raw_source": "ubuntugpu.raw",
+    "image_name": "Ubuntu Xenial with GPU support (SWITCHengines)",
+    "image_min_ram": "2048",
+    "image_min_disk": "auto",
+    "image_properties": {
+        "description": "Username: 'ubuntu'. See http://help.switch.ch/engines/documentation/switch-official-images for further information",
+        "hw_vif_multiqueue_enabled": "true",
+        "os_flavor": "ubuntu",
+        "os_flavor_name": "Ubuntu (SWITCHengines)",
+        "default_user": "ubuntu",
+        "os_version": "Xenial 16.04",
+        "requires_rdp": "false",
+        "requires_ssh": "true"
+    }
+}
+
 images_info["ubuntu_xenial"] = {
     "image_raw_source": "ubuntuxenial.raw",
     "image_name": "Ubuntu Xenial 16.04 (SWITCHengines)",
