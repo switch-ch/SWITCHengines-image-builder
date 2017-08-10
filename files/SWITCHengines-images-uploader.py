@@ -333,8 +333,10 @@ def glance_update_and_set_public(glance, image, image_info):
     """
     image_properties = image_info['image_properties']
     try:
-        logger.debug("glance image update: visibility=public, properties=%s", image_properties)
-        glance.images.update(image.id, visibility='public', **image_properties)
+        logger.debug("glance image update: properties=%s", image_properties)
+        glance.images.update(image.id, **image_properties)
+        logger.debug("glance image update: visibility=public")
+        glance.images.update(image.id, visibility='public')
     except Exception:
         logger.exception("Updating (-> public) Glance image '%s' [%s] failed", image.name, image.id)
         return 1
