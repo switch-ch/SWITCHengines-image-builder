@@ -156,13 +156,8 @@ def main():
     auth_session = session.Session(auth=auth)
     keystone = keystone_v3.Client(session=auth_session)
 
-    # get tenant id
-    try:
-        tenant = keystone.projects.find(name=os_tenant_name)
-    except keystoneclient.exceptions.NotFound:
-        logger.error("Looking up tenant id for '%s' failed", os_tenant_name)
-        sys.exit(1)
-    os_tenant_id = tenant.id
+    # get os_tenant_name ID from the session
+    os_tenant_id = auth_session.get_project_id()
 
     # which regions to use, see -a|--all-regions option
     regions = [os_region_name]
@@ -341,7 +336,3 @@ def glance_rename_and_set_private(glance, image, new_name, new_description):
         return 1
 
     return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
