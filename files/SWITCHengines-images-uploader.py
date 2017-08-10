@@ -336,3 +336,7 @@ def glance_rename_and_set_private(glance, image, new_name, new_description):
         return 1
 
     return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
