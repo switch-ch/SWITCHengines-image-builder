@@ -87,7 +87,7 @@
 
   - name: pip install networkx
     become: True
-    pip: name=networkx
+    pip: name=networkx version=1.11
 
   - name: git clone SWITCH repo for diskimage-builder
     git: repo=https://github.com/switch-ch/diskimage-builder.git dest=/home/ubuntu/diskimage-builder force=yes version=SWITCHengines
