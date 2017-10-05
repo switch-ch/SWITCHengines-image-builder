@@ -54,8 +54,6 @@
     - IMAGES_ROOT: "{{WEB_ROOT}}/images"
   hosts: imagebuilderansible
   tasks:
-  - name: bashrc
-    lineinfile: dest=/home/ubuntu/.bashrc line="export PATH=$PATH:/home/ubuntu/diskimage-builder/bin:/home/ubuntu/dib-utils/bin"
   - name: install packages
     become: True
     apt: name={{item}} update_cache=yes
@@ -89,9 +87,6 @@
   - name: pip install networkx
     become: True
     pip: name=networkx
-
-  - name: git clone dib-utils
-    git: repo=https://github.com/openstack/dib-utils.git dest=/home/ubuntu/dib-utils force=yes
 
   - name: git clone SWITCH repo for diskimage-builder
     git: repo=https://github.com/switch-ch/diskimage-builder.git dest=/home/ubuntu/diskimage-builder force=yes version=SWITCHengines
