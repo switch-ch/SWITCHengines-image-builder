@@ -70,11 +70,12 @@
       - screen
       - htop
       - python-pip
+      - python-setuptools
       - python-dev
 
   - name: pip upgrade
     become: True
-    pip: name=pip state=latest
+    pip: name=pip state=latest executable=pip
 
   - name: pip install python-keystoneclient
     become: True
@@ -110,7 +111,7 @@
 
   - name: Manage fstab
     become: True
-    mount: name='{{IMAGES_ROOT}}' src=/dev/vdb opts=nobootwait fstype=ext4 state=mounted
+    mount: name='{{IMAGES_ROOT}}' src=/dev/vdb fstype=ext4 state=mounted
     when: images_folder.stat.exists == False
 
   - name: Create nginx config
